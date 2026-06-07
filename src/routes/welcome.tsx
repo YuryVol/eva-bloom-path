@@ -21,10 +21,7 @@ function WelcomeScreen() {
     } catch {
       // ignore — navigation should still proceed
     }
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("eva:spheres-intro", "1");
-    }
-    navigate({ to: "/journey/spheres" });
+    navigate({ to: "/rewards-intro" });
   };
 
 
@@ -45,7 +42,7 @@ function WelcomeScreen() {
       >
         <div className="mx-auto max-w-md">
           {user_name && (
-            <p className="mb-2 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            <p className="font-display mb-3 text-4xl font-light italic text-foreground/80">
               {user_name},
             </p>
           )}

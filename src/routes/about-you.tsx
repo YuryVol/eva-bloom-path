@@ -42,28 +42,25 @@ function AboutYouScreen() {
   };
 
   return (
-    <main className="relative flex min-h-[100dvh] flex-col items-center justify-start px-6 py-5">
+    <main className="relative h-[100dvh] overflow-hidden bg-[#F9F4EE]">
       <AmbientBackground theme="safe" />
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9 }}
-        className="mx-auto flex w-full max-w-md flex-col items-center"
+        className="relative z-10 mx-auto flex h-full w-full max-w-md flex-col items-center justify-center overflow-y-auto px-6 py-5"
       >
         {/* Eva portrait with shimmer */}
         <EvaPortrait />
 
-        <h1 className="mt-4 text-center font-display text-2xl text-glow md:text-3xl">
-          Я — Ева.
+        <h1 className="mt-2 text-center font-display text-2xl text-glow">
+          Я — Ева. Давай познакомимся
         </h1>
-        <p className="mt-2 text-center font-display text-lg text-foreground/90 md:text-xl">
-          Давай познакомимся
-        </p>
-        <p className="mt-1.5 text-center text-xs text-muted-foreground">
+        <p className="mt-1 text-center text-xs text-muted-foreground">
           Несколько мягких вопросов, чтобы я обращалась к тебе по-настоящему.
         </p>
 
-        <div className="mt-5 w-full space-y-4">
+        <div className="mt-3 w-full space-y-3">
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
               Как к тебе обращаться?
@@ -127,7 +124,7 @@ function AboutYouScreen() {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-4 flex justify-center">
           <GlowButton onClick={handleNext} disabled={!user_name.trim()} size="md">
             Продолжить
           </GlowButton>
@@ -140,7 +137,7 @@ function AboutYouScreen() {
 function EvaPortrait() {
   const orbitDots = Array.from({ length: 18 }, (_, i) => i);
   return (
-    <div className="relative mt-1 flex size-64 items-center justify-center md:size-72">
+    <div className="relative mt-1 flex size-40 items-center justify-center md:size-48">
       {/* Sun halo radiating into background */}
       <div
         aria-hidden
@@ -214,7 +211,7 @@ function EvaPortrait() {
 
       {/* Portrait frame — warm brown shadow */}
       <div
-        className="relative size-60 overflow-hidden rounded-full border-2 border-[#FFF8D6]/80 bg-[#F9F4EE] md:size-64"
+        className="relative size-36 overflow-hidden rounded-full border-2 border-[#FFF8D6]/80 bg-[#F9F4EE] md:size-44"
         style={{
           boxShadow:
             "0 14px 32px -8px rgba(110,70,40,0.35), 0 6px 14px -4px rgba(110,70,40,0.28)",

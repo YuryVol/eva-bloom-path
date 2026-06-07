@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
@@ -142,10 +143,18 @@ function SpheresScreen() {
   };
 
   const handleNext = async () => {
-    if (!journeyId || selected.length !== 3) return;
-    setStep("assess");
-    await save({ data: { id: journeyId, state: state as never, current_step: "assess" } });
-    navigate({ to: "/journey/assess" as never });
+    if (selected.length !== 3) return;
+    if (!journeyId) {
+      toast.error("Путешествие ещё загружается, подожди секунду");
+      return;
+    }
+    try {
+      setStep("assess");
+      await save({ data: { id: journeyId, state: state as never, current_step: "assess" } });
+      navigate({ to: "/journey/assess" as never });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Не удалось сохранить выбор");
+    }
   };
 
   return (
@@ -326,8 +335,10 @@ function SpheresScreen() {
             })}
           </div>
 
-          {/* Footer (outside stage) */}
-          <div className="relative z-10 mt-auto shrink-0 px-4 pb-3 pt-0 text-center">
+          {/* Footer — sticky внизу, всегда видна */}
+          <div className="sticky bottom-0 z-20 shrink-0 px-4 pb-4 pt-3 text-center"
+            style={{ background: "linear-gradient(to top, #F5EDDF 70%, transparent)" }}
+          >
             <p
               className="mb-2 text-[11px] uppercase tracking-[0.3em]"
               style={{ color: "#9B8470", fontFamily: '"Cormorant Garamond", serif' }}

@@ -11,15 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as ToSpheresRouteImport } from './routes/to-spheres'
+import { Route as RewardsIntroRouteImport } from './routes/rewards-intro'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IntroRouteImport } from './routes/intro'
+import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as AuthInviteRouteImport } from './routes/auth-invite'
 import { Route as AboutYouRouteImport } from './routes/about-you'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPracticesRouteImport } from './routes/_authenticated/practices'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedJourneyIndexRouteImport } from './routes/_authenticated/journey/index'
 import { Route as AuthenticatedJourneySummaryRouteImport } from './routes/_authenticated/journey/summary'
 import { Route as AuthenticatedJourneySuccessRouteImport } from './routes/_authenticated/journey/success'
@@ -45,6 +49,11 @@ const ToSpheresRoute = ToSpheresRouteImport.update({
   path: '/to-spheres',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RewardsIntroRoute = RewardsIntroRouteImport.update({
+  id: '/rewards-intro',
+  path: '/rewards-intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -58,6 +67,11 @@ const LoginRoute = LoginRouteImport.update({
 const IntroRoute = IntroRouteImport.update({
   id: '/intro',
   path: '/intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyRoute = EmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DisclaimerRoute = DisclaimerRouteImport.update({
@@ -84,9 +98,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPracticesRoute = AuthenticatedPracticesRouteImport.update({
+  id: '/practices',
+  path: '/practices',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedJourneyRoute = AuthenticatedJourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedJourneyIndexRoute =
@@ -179,12 +203,16 @@ export interface FileRoutesByFullPath {
   '/about-you': typeof AboutYouRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
+  '/emergency': typeof EmergencyRoute
   '/intro': typeof IntroRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/journey': typeof AuthenticatedJourneyRouteWithChildren
+  '/practices': typeof AuthenticatedPracticesRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
@@ -205,11 +233,15 @@ export interface FileRoutesByTo {
   '/about-you': typeof AboutYouRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
+  '/emergency': typeof EmergencyRoute
   '/intro': typeof IntroRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/practices': typeof AuthenticatedPracticesRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
@@ -232,12 +264,16 @@ export interface FileRoutesById {
   '/about-you': typeof AboutYouRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
+  '/emergency': typeof EmergencyRoute
   '/intro': typeof IntroRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRouteWithChildren
+  '/_authenticated/practices': typeof AuthenticatedPracticesRoute
   '/_authenticated/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/_authenticated/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/_authenticated/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
@@ -260,12 +296,16 @@ export interface FileRouteTypes {
     | '/about-you'
     | '/auth-invite'
     | '/disclaimer'
+    | '/emergency'
     | '/intro'
     | '/login'
     | '/reset-password'
+    | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/home'
     | '/journey'
+    | '/practices'
     | '/journey/assess'
     | '/journey/current-state'
     | '/journey/emdr'
@@ -286,11 +326,15 @@ export interface FileRouteTypes {
     | '/about-you'
     | '/auth-invite'
     | '/disclaimer'
+    | '/emergency'
     | '/intro'
     | '/login'
     | '/reset-password'
+    | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/home'
+    | '/practices'
     | '/journey/assess'
     | '/journey/current-state'
     | '/journey/emdr'
@@ -312,12 +356,16 @@ export interface FileRouteTypes {
     | '/about-you'
     | '/auth-invite'
     | '/disclaimer'
+    | '/emergency'
     | '/intro'
     | '/login'
     | '/reset-password'
+    | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/_authenticated/home'
     | '/_authenticated/journey'
+    | '/_authenticated/practices'
     | '/_authenticated/journey/assess'
     | '/_authenticated/journey/current-state'
     | '/_authenticated/journey/emdr'
@@ -340,9 +388,11 @@ export interface RootRouteChildren {
   AboutYouRoute: typeof AboutYouRoute
   AuthInviteRoute: typeof AuthInviteRoute
   DisclaimerRoute: typeof DisclaimerRoute
+  EmergencyRoute: typeof EmergencyRoute
   IntroRoute: typeof IntroRoute
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  RewardsIntroRoute: typeof RewardsIntroRoute
   ToSpheresRoute: typeof ToSpheresRoute
   WelcomeRoute: typeof WelcomeRoute
 }
@@ -361,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/to-spheres'
       fullPath: '/to-spheres'
       preLoaderRoute: typeof ToSpheresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rewards-intro': {
+      id: '/rewards-intro'
+      path: '/rewards-intro'
+      fullPath: '/rewards-intro'
+      preLoaderRoute: typeof RewardsIntroRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -382,6 +439,13 @@ declare module '@tanstack/react-router' {
       path: '/intro'
       fullPath: '/intro'
       preLoaderRoute: typeof IntroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency': {
+      id: '/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof EmergencyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/disclaimer': {
@@ -419,11 +483,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/practices': {
+      id: '/_authenticated/practices'
+      path: '/practices'
+      fullPath: '/practices'
+      preLoaderRoute: typeof AuthenticatedPracticesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/journey': {
       id: '/_authenticated/journey'
       path: '/journey'
       fullPath: '/journey'
       preLoaderRoute: typeof AuthenticatedJourneyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/journey/': {
@@ -566,11 +644,15 @@ const AuthenticatedJourneyRouteWithChildren =
   AuthenticatedJourneyRoute._addFileChildren(AuthenticatedJourneyRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRouteWithChildren
+  AuthenticatedPracticesRoute: typeof AuthenticatedPracticesRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRouteWithChildren,
+  AuthenticatedPracticesRoute: AuthenticatedPracticesRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -583,12 +665,24 @@ const rootRouteChildren: RootRouteChildren = {
   AboutYouRoute: AboutYouRoute,
   AuthInviteRoute: AuthInviteRoute,
   DisclaimerRoute: DisclaimerRoute,
+  EmergencyRoute: EmergencyRoute,
   IntroRoute: IntroRoute,
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  RewardsIntroRoute: RewardsIntroRoute,
   ToSpheresRoute: ToSpheresRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

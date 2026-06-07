@@ -66,7 +66,7 @@ function SummaryScreen() {
 
   const handleNewJourney = () => {
     reset();
-    navigate({ to: "/journey/spheres" as never });
+    navigate({ to: "/home" as never });
   };
 
   return (
@@ -185,7 +185,7 @@ function SummaryScreen() {
             Поделиться с другом
           </button>
           <button
-            onClick={() => navigate({ to: "/" as never })}
+            onClick={() => navigate({ to: "/home" as never })}
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
           >
             на главную

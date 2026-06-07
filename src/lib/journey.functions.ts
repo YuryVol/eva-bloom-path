@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { initialJourneyState, type JourneyState } from "./journey-types";
+import { sendTelegramMessage } from "./telegram";
 
 const GENERIC_ERROR = "An unexpected error occurred. Please try again.";
 
@@ -184,12 +185,32 @@ export const completeJourney = createServerFn({ method: "POST" })
     const xp_total = (profile?.xp_total ?? 0) + xp_awarded;
     const coins_total = (profile?.coins_total ?? 0) + coins_awarded;
 
-    const { error: pErr } = await supabase
+    const { data: updatedProfile, error: pErr } = await supabase
       .from("profiles")
-      .upsert({ id: userId, xp_total, coins_total });
+      .upsert({ id: userId, xp_total, coins_total })
+      .select("telegram_chat_id")
+      .maybeSingle();
     if (pErr) {
       console.error("[journey] completeJourney profile upsert error:", pErr.message);
       throw new Error(GENERIC_ERROR);
+    }
+
+    // Send Telegram notification (non-blocking)
+    // PostgREST returns bigint as string — handle both number and string.
+    const tgChatIdRaw = (updatedProfile as Record<string, unknown> | null)?.telegram_chat_id;
+    const tgChatId =
+      typeof tgChatIdRaw === "number"
+        ? tgChatIdRaw
+        : typeof tgChatIdRaw === "string" && tgChatIdRaw
+          ? parseInt(tgChatIdRaw, 10)
+          : null;
+    console.log("[journey] completeJourney tgChatIdRaw:", tgChatIdRaw, "tgChatId:", tgChatId);
+    if (tgChatId && !isNaN(tgChatId)) {
+      // Must await — Cloudflare Workers terminate before fire-and-forget fetches complete.
+      await sendTelegramMessage(
+        tgChatId,
+        `Ты прошла путь 🌟\n\n+${xp_awarded} XP · +${coins_awarded} монет\nВсего: ${xp_total} XP`,
+      );
     }
 
     return { ok: true, xp_total, coins_total, xp_awarded, coins_awarded };
@@ -214,8 +235,9 @@ export const getUserStats = createServerFn({ method: "GET" })
             display_name: profile.display_name,
             xp_total: profile.xp_total,
             coins_total: profile.coins_total,
+            telegram_connected: !!(profile as Record<string, unknown>).telegram_chat_id,
           }
-        : { display_name: null, xp_total: 0, coins_total: 0 },
+        : { display_name: null, xp_total: 0, coins_total: 0, telegram_connected: false },
       history: history ?? [],
     };
   });

@@ -20,39 +20,39 @@ const presets: Record<SphereId, string[]> = {
     "Хочу чувствовать, что меня слышат",
   ],
   health: [
-    "Хочу вернуть энергию телу",
-    "Хочу спать глубоко и просыпаться лёгким",
-    "Хочу двигаться без боли",
+    "Хочу начать слышать сигналы своего тела",
+    "Хочу добавить движение, которое приносит радость",
+    "Хочу отдохнуть по-настоящему — физически",
   ],
   career: [
-    "Хочу делать дело, в котором я живой",
-    "Хочу признание за то, что мне важно",
-    "Хочу спокойно идти в большее",
+    "Хочу найти то, что даёт энергию, а не забирает",
+    "Хочу сказать «нет» тому, что не моё",
+    "Хочу сделать первый шаг к своему делу",
   ],
   growth: [
-    "Хочу понять, куда расту",
-    "Хочу научиться слышать себя",
+    "Хочу начать то, что давно откладываю",
+    "Хочу выработать привычку, которая меняет день",
     "Хочу выйти за привычные границы",
   ],
   family: [
-    "Хочу тепла в моей семье",
-    "Хочу принять своих такими, какие они есть",
-    "Хочу быть собой рядом с близкими",
+    "Хочу почувствовать себя ближе с кем-то из семьи",
+    "Хочу спокойно выдерживать семейное напряжение",
+    "Хочу сказать что-то важное, что давно молчу",
   ],
   finance: [
-    "Хочу спокойствия с деньгами",
-    "Хочу зарабатывать в согласии с собой",
-    "Хочу выйти из тревоги о завтра",
+    "Хочу разобраться, куда уходят деньги",
+    "Хочу перестать бояться смотреть на счёт",
+    "Хочу сделать первый шаг к финансовой подушке",
   ],
   rest: [
-    "Хочу разрешить себе остановиться",
-    "Хочу настоящего восстановления",
-    "Хочу тишины внутри",
+    "Хочу научиться останавливаться без чувства вины",
+    "Хочу найти то, что по-настоящему восстанавливает",
+    "Хочу защитить время для себя",
   ],
   people: [
-    "Хочу быть среди тех, кто меня питает",
-    "Хочу мягко отпустить лишних",
-    "Хочу честной близости с друзьями",
+    "Хочу быть среди тех, кто меня видит",
+    "Хочу выйти из отношений, которые забирают силы",
+    "Хочу открыться кому-то новому",
   ],
 };
 
@@ -62,13 +62,15 @@ const DEFAULT_HERO: SceneVisual = {
   objectPosition: "center center",
 };
 
-const RELATIONSHIPS_DEFAULT: SceneVisual = {
-  src: "/assets/eva/goals/goaldefault.png",
-  alt: "Ева ждёт твою цель",
-  objectPosition: "center 30%",
+const SPHERE_DEFAULT_VISUALS: Partial<Record<SphereId, SceneVisual>> = {
+  relationships: {
+    src: "/assets/eva/goals/goaldefault.png",
+    alt: "Ева ждёт твою цель",
+    objectPosition: "center 30%",
+  },
 };
 
-const RELATIONSHIPS_GOAL_IMAGES: Record<string, SceneVisual> = {
+const GOAL_IMAGES: Record<string, SceneVisual> = {
   "Хочу глубокой близости с партнёром": {
     src: "/assets/eva/goals/glubblizosti.png",
     alt: "Глубокая близость с партнёром",
@@ -144,15 +146,10 @@ function GoalScreen() {
   };
 
   // Pick the visual to show
-  const isRelationships = sphere === "relationships";
-  const allVisuals: SceneVisual[] = isRelationships
-    ? [RELATIONSHIPS_DEFAULT, ...Object.values(RELATIONSHIPS_GOAL_IMAGES)]
-    : [DEFAULT_HERO];
-  const current: SceneVisual = isRelationships
-    ? mode === "preset" && selected && RELATIONSHIPS_GOAL_IMAGES[selected]
-      ? RELATIONSHIPS_GOAL_IMAGES[selected]
-      : RELATIONSHIPS_DEFAULT
-    : DEFAULT_HERO;
+  const sphereDefault = (sphere && SPHERE_DEFAULT_VISUALS[sphere]) || DEFAULT_HERO;
+  const goalVisual = mode === "preset" && selected ? GOAL_IMAGES[selected] : undefined;
+  const current: SceneVisual = goalVisual ?? sphereDefault;
+  const allVisuals: SceneVisual[] = [sphereDefault, ...Object.values(GOAL_IMAGES)];
 
   return (
     <FadeTransition k="goal">

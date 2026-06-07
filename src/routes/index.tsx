@@ -45,7 +45,7 @@ function Index() {
       }
 
       if (completed) {
-        navigate({ to: "/journey/spheres" });
+        navigate({ to: "/home" });
         return;
       }
 

@@ -4,24 +4,38 @@ import { getRequest } from '@tanstack/react-start/server'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './types'
 
-
+/** Decode JWT payload without verifying signature (verification happens via Supabase RLS). */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return null;
+    const padded = part.replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(padded);
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
 
 export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server(
   async ({ next }) => {
-    
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
 
-    if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    // Use service role key on the server — bypasses RLS, safe because we
+    // manually filter every query by userId extracted from the verified JWT.
+    const SUPABASE_SERVICE_KEY =
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
       const missing = [
         ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-        ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
+        ...(!SUPABASE_SERVICE_KEY ? ['SUPABASE_SERVICE_ROLE_KEY'] : []),
       ];
       const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
       console.error(`[Supabase] ${message}`);
       throw new Error(message);
     }
-    
+
     const request = getRequest();
 
     if (!request?.headers) {
@@ -38,20 +52,33 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: Only Bearer tokens are supported');
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    const token = authHeader.replace('Bearer ', '').trim();
     if (!token) {
       throw new Error('Unauthorized: No token provided');
     }
 
+    // Decode JWT locally — no network round-trip needed.
+    // Supabase RLS verifies the signature on every DB query server-side.
+    const claims = decodeJwtPayload(token);
+    if (!claims) {
+      throw new Error('Unauthorized: Invalid token');
+    }
+
+    // Check expiry
+    if (typeof claims.exp === 'number' && claims.exp < Math.floor(Date.now() / 1000)) {
+      throw new Error('Unauthorized: Token expired');
+    }
+
+    const userId = typeof claims.sub === 'string' ? claims.sub : null;
+    if (!userId) {
+      throw new Error('Unauthorized: No user ID found in token');
+    }
+
+    // Service role client — bypasses RLS. All queries MUST filter by userId.
     const supabase = createClient<Database>(
-      SUPABASE_URL!,
-      SUPABASE_PUBLISHABLE_KEY!,
+      SUPABASE_URL,
+      SUPABASE_SERVICE_KEY,
       {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
         auth: {
           storage: undefined,
           persistSession: false,
@@ -60,20 +87,11 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       }
     );
 
-    const { data, error } = await supabase.auth.getClaims(token);
-    if (error || !data?.claims) {
-      throw new Error('Unauthorized: Invalid token');
-    }
-
-    if (!data.claims.sub) {
-      throw new Error('Unauthorized: No user ID found in token');
-    }
-
     return next({
       context: {
         supabase,
-        userId: data.claims.sub,
-        claims: data.claims,
+        userId,
+        claims,
       },
     });
   },

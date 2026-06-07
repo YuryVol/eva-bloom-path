@@ -7,12 +7,13 @@ import { GlowButton } from "@/components/eva/GlowButton";
 import { JourneyScene, type SceneVisual } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { type SphereId } from "@/lib/journey-types";
 
 export const Route = createFileRoute("/_authenticated/journey/fears")({
   component: FearsScreen,
 });
 
-const FEAR_OPTIONS = [
+const UNIVERSAL_FEARS = [
   "Что не получится",
   "Что осудят",
   "Что будет больно",
@@ -22,6 +23,57 @@ const FEAR_OPTIONS = [
   "Что окажусь одна",
   "Что это не моё",
 ];
+
+const SPHERE_FEARS: Partial<Record<SphereId, string[]>> = {
+  relationships: [
+    "Что меня не услышат",
+    "Что потеряю партнёра",
+    "Что буду слишком уязвимой",
+    "Что меня отвергнут",
+  ],
+  family: [
+    "Что меня не услышат",
+    "Что стану причиной конфликта",
+    "Что ничего не изменится",
+    "Что придётся взять на себя слишком много",
+  ],
+  career: [
+    "Что я недостаточно хороша для этого",
+    "Что потеряю стабильность",
+    "Что это не принесёт денег",
+    "Что слишком поздно менять",
+  ],
+  growth: [
+    "Что не хватит дисциплины",
+    "Что быстро брошу",
+    "Что уже упустила время",
+    "Что это не даст результата",
+  ],
+  finance: [
+    "Что денег никогда не будет хватать",
+    "Что я плохо распоряжаюсь деньгами",
+    "Что это слишком сложно для меня",
+    "Что я не заслуживаю большего",
+  ],
+  rest: [
+    "Что буду чувствовать себя ленивой",
+    "Что всё развалится без меня",
+    "Что не умею отдыхать",
+    "Что не заслужила",
+  ],
+  people: [
+    "Что останусь одна",
+    "Что меня отвергнут",
+    "Что буду обузой",
+    "Что не смогу поддерживать связи",
+  ],
+  health: [
+    "Что снова не получится",
+    "Что надо кардинально менять жизнь",
+    "Что тело меня подводит",
+    "Что слишком много всего нарушено",
+  ],
+};
 
 const FEAR_VISUALS: Record<string, SceneVisual> = {
   default: {
@@ -82,6 +134,13 @@ function FearsScreen() {
   const [custom, setCustom] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const sphere = (state.priority_sphere || state.selected_spheres[0]) as SphereId | undefined;
+  const sphereFears = sphere ? (SPHERE_FEARS[sphere] ?? []) : [];
+  const FEAR_OPTIONS = useMemo(() => {
+    const sphereSpecific = sphereFears.filter((f) => !UNIVERSAL_FEARS.includes(f));
+    return [...sphereSpecific, ...UNIVERSAL_FEARS];
+  }, [sphere]);
+
   const activeFearKey = useMemo(() => {
     for (let i = selected.length - 1; i >= 0; i--) {
       if (FEAR_VISUALS[selected[i]]) return selected[i];
@@ -113,7 +172,7 @@ function FearsScreen() {
   const handleNext = async () => {
     if (!journeyId || !canNext) return;
     setSaving(true);
-    const hasCustom = selected.some((f) => !FEAR_OPTIONS.includes(f));
+    const hasCustom = selected.some((f) => !UNIVERSAL_FEARS.includes(f) && !sphereFears.includes(f));
     const xpGain = hasCustom ? 6 : 3;
     const next = {
       ...state,

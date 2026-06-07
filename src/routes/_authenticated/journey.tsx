@@ -21,12 +21,19 @@ function JourneyLayout() {
 
   useEffect(() => {
     if (loaded) return;
-    fetchJourney().then((j) => {
-      setJourney(j.id, j.state, j.current_step as StepId);
-      if (j.current_step && j.current_step !== "spheres") {
-        navigate({ to: `/journey/${j.current_step}` as never });
-      }
-    });
+    fetchJourney()
+      .then((j) => {
+        setJourney(j.id, j.state, j.current_step as StepId);
+        if (j.current_step && j.current_step !== "spheres") {
+          navigate({ to: `/journey/${j.current_step}` as never });
+        }
+      })
+      .catch((err) => {
+        console.error("[journey layout] fetchJourney failed:", err);
+        import("sonner").then(({ toast }) =>
+          toast.error(err instanceof Error ? err.message : "Не удалось загрузить путешествие")
+        );
+      });
   }, [loaded, fetchJourney, setJourney, navigate]);
 
   const idx = STEPS.indexOf(currentStep);
