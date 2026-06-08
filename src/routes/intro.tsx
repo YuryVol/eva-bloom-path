@@ -196,13 +196,13 @@ function IntroScreen() {
             </div>
             <p className="mt-5 text-xs leading-relaxed text-white/50 max-w-xs mx-auto">
               Приложение не заменяет помощь психолога и не ставит диагнозы.
-              При кризисе обратись к{" "}
+              При кризисе обратитесь, пожалуйста, в{" "}
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setShowEmergency(true); }}
                 className="underline underline-offset-2 text-white/70 hover:text-white transition"
               >
-                экстренным службам
+                экстренные службы
               </button>
               .
             </p>
