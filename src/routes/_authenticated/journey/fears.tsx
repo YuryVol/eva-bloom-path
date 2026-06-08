@@ -22,6 +22,9 @@ const UNIVERSAL_FEARS = [
   "Что придётся менять слишком много",
   "Что окажусь одна",
   "Что это не моё",
+  "Что мои желания — это эгоизм",
+  "Что если займусь собой — всё рухнет",
+  "Что это очередная попытка, которая ни к чему не приведёт",
 ];
 
 const SPHERE_FEARS: Partial<Record<SphereId, string[]>> = {
@@ -181,12 +184,10 @@ function FearsScreen() {
     };
     patch({ selected_fears: selected, xp: next.xp });
     setStep("feeling");
-    try {
-      await save({ data: { id: journeyId, state: next as never, current_step: "feeling" } });
-      navigate({ to: "/journey/feeling" as never });
-    } finally {
-      setSaving(false);
-    }
+    navigate({ to: "/journey/feeling" as never });
+    save({ data: { id: journeyId, state: next as never, current_step: "feeling" } })
+      .catch(() => {})
+      .finally(() => setSaving(false));
   };
 
   return (

@@ -202,18 +202,30 @@ function HomeScreen() {
         style={{ paddingTop: "max(env(safe-area-inset-top), 1.25rem)", paddingBottom: "max(env(safe-area-inset-bottom), 1.25rem)" }}
       >
         {/* ① Заголовок — фиксированная высота */}
-        <div className="mb-3 text-center">
-          <p className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-            Твоё пространство
-          </p>
-          <h1 className="font-display text-3xl text-glow leading-tight">
-            Мир Евы
-          </h1>
-          {profile.display_name && (
-            <p className="mt-0.5 font-display text-sm italic text-foreground/50">
-              {profile.display_name}
+        <div className="mb-3 flex items-start justify-between">
+          <div className="flex-1 text-center">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+              Твоё пространство
             </p>
-          )}
+            <h1 className="font-display text-3xl text-glow leading-tight">
+              Мир Евы
+            </h1>
+            {profile.display_name && (
+              <p className="mt-0.5 font-display text-sm italic text-foreground/50">
+                {profile.display_name}
+              </p>
+            )}
+          </div>
+          <Link
+            to="/profile"
+            className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full border border-border/50 bg-card/60 text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+            aria-label="Мой прогресс"
+            title="Мой прогресс"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </Link>
         </div>
 
         {/* ② Картинка — занимает всё свободное место */}

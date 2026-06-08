@@ -79,15 +79,10 @@ function FeelingScreen() {
     };
     patch({ desired_state: finalValue, xp: next.xp, coins: next.coins });
     setStep("current-state");
-    try {
-      await save({
-        data: { id: journeyId, state: next as never, current_step: "current-state" },
-      });
-      
-      navigate({ to: "/journey/current-state" as never });
-    } finally {
-      setSaving(false);
-    }
+    navigate({ to: "/journey/current-state" as never });
+    save({ data: { id: journeyId, state: next as never, current_step: "current-state" } })
+      .catch(() => {})
+      .finally(() => setSaving(false));
   };
 
   return (

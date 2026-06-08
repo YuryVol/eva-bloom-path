@@ -118,6 +118,11 @@ function PathScreen() {
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:mx-0 mx-auto">
             {copy.invite}
           </p>
+          <p className="mt-2 max-w-md text-xs leading-relaxed text-muted-foreground/70 italic md:mx-0 mx-auto">
+            {typeof score === "number" && score < 7
+              ? "Здесь сейчас труднее всего — поэтому Ева идёт сюда с тобой."
+              : "Ты выбрала эту сферу — Ева идёт туда, куда зовёт сердце."}
+          </p>
         </div>
 
         <div className="mt-5">

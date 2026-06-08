@@ -24,6 +24,9 @@ interface SupabaseProfile {
   telegram_chat_id: number | null;
   notify_return: boolean;
   notify_practices: boolean;
+  first_step_text: string | null;
+  first_step_reminder_at: string | null;
+  first_step_reminded: boolean;
 }
 
 interface SupabaseJourney {
@@ -99,7 +102,7 @@ async function handleScheduled(): Promise<void> {
 
   // Fetch all users with telegram connected
   const profilesRes = await fetch(
-    `${supabaseUrl}/rest/v1/profiles?telegram_chat_id=not.is.null&select=id,telegram_chat_id,notify_return,notify_practices`,
+    `${supabaseUrl}/rest/v1/profiles?telegram_chat_id=not.is.null&select=id,telegram_chat_id,notify_return,notify_practices,first_step_text,first_step_reminder_at,first_step_reminded`,
     { headers },
   );
   if (!profilesRes.ok) return;
@@ -148,6 +151,25 @@ async function handleScheduled(): Promise<void> {
         profile.telegram_chat_id,
         "Доброе утро 🕯️\n\nТвои практики ждут — 5 минут для себя сегодня.",
       );
+    }
+
+    // ── First step follow-up (3 days after journey completion) ───────────────
+    if (
+      !profile.first_step_reminded &&
+      profile.first_step_text &&
+      profile.first_step_reminder_at &&
+      new Date(profile.first_step_reminder_at).getTime() <= now
+    ) {
+      await sendTelegramMessage(
+        profile.telegram_chat_id,
+        `Помнишь шаг, который ты себе пообещала:\n«${profile.first_step_text}»\n\nКак он? 🌱`,
+      );
+      // Mark as reminded so we don't send again
+      await fetch(`${supabaseUrl}/rest/v1/profiles?id=eq.${profile.id}`, {
+        method: "PATCH",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ first_step_reminded: true }),
+      });
     }
   }
 }

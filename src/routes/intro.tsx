@@ -1,8 +1,98 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, X } from "lucide-react";
 import { GlowButton } from "@/components/eva/GlowButton";
 import { useOnboardingDraft } from "@/lib/onboarding-store";
 import { useAudioStore } from "@/lib/audio-store";
+
+// ─── Emergency services modal (kept here after disclaimer merge) ──────────────
+
+const EMERGENCY_LINES = [
+  {
+    category: "Единый экстренный номер",
+    items: [{ name: "Скорая, пожарные, полиция", number: "112" }],
+  },
+  {
+    category: "Психологическая помощь",
+    items: [
+      { name: "Телефон доверия (бесплатно, круглосуточно)", number: "8-800-2000-122" },
+      { name: "Кризисная линия психологической помощи", number: "8-800-100-49-94" },
+    ],
+  },
+  {
+    category: "Медицинская и социальная помощь",
+    items: [
+      { name: "Скорая медицинская помощь", number: "103" },
+      { name: "Помощь при насилии (Национальный центр)", number: "8-800-7000-600" },
+    ],
+  },
+];
+
+function EmergencyModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <motion.div
+        initial={{ y: 60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 60, opacity: 0 }}
+        transition={{ type: "spring", damping: 28, stiffness: 280 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 mx-4 mb-4 w-full max-w-md rounded-3xl bg-[#F9F4EE] p-6 shadow-2xl sm:mb-0"
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="font-display text-xl text-foreground">Экстренная помощь</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex size-8 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition hover:bg-muted"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+        <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
+          Все номера бесплатны и работают круглосуточно.
+        </p>
+        <div className="flex max-h-[55dvh] flex-col gap-4 overflow-y-auto pr-1">
+          {EMERGENCY_LINES.map((section) => (
+            <div key={section.category}>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                {section.category}
+              </p>
+              <div className="flex flex-col gap-2">
+                {section.items.map((item) => (
+                  <div
+                    key={item.number}
+                    className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/80 px-4 py-3"
+                  >
+                    <p className="text-xs leading-snug text-foreground/80">{item.name}</p>
+                    <a
+                      href={`tel:${item.number.replace(/\D/g, "")}`}
+                      className="flex shrink-0 items-center gap-1.5 rounded-xl bg-primary/10 px-3 py-1.5 font-display text-sm text-primary transition hover:bg-primary/20"
+                    >
+                      <Phone className="size-3" strokeWidth={2} />
+                      {item.number}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground/70">
+          Если вам плохо — вы не одна. Помощь есть, и вы заслуживаете её.
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export const Route = createFileRoute("/intro")({
   component: IntroScreen,
@@ -17,6 +107,7 @@ function IntroScreen() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showFinal, setShowFinal] = useState(false);
   const [videoOpacity, setVideoOpacity] = useState(1);
+  const [showEmergency, setShowEmergency] = useState(false);
   const muted = useAudioStore((s) => s.muted);
   const setMuted = useAudioStore((s) => s.setMuted);
   const setAutoplayBlocked = useAudioStore((s) => s.setAutoplayBlocked);
@@ -46,8 +137,8 @@ function IntroScreen() {
   }, []);
 
   const handleNext = () => {
-    set({ intro_seen: true });
-    navigate({ to: "/disclaimer" });
+    set({ intro_seen: true, disclaimer_seen: true });
+    navigate({ to: "/about-you" });
   };
 
   return (
@@ -103,9 +194,24 @@ function IntroScreen() {
             <div className="mt-7">
               <GlowButton onClick={handleNext}>Продолжить</GlowButton>
             </div>
+            <p className="mt-5 text-xs leading-relaxed text-white/50 max-w-xs mx-auto">
+              Приложение не заменяет помощь психолога и не ставит диагнозы.
+              При кризисе обратись к{" "}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setShowEmergency(true); }}
+                className="underline underline-offset-2 text-white/70 hover:text-white transition"
+              >
+                экстренным службам
+              </button>
+              .
+            </p>
           </div>
         )}
       </div>
+      <AnimatePresence>
+        {showEmergency && <EmergencyModal onClose={() => setShowEmergency(false)} />}
+      </AnimatePresence>
     </main>
   );
 }

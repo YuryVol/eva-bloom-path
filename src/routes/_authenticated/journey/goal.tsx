@@ -17,7 +17,7 @@ const presets: Record<SphereId, string[]> = {
   relationships: [
     "Хочу глубокой близости с партнёром",
     "Хочу спокойно говорить о трудном",
-    "Хочу чувствовать, что меня слышат",
+    "Хочу чтобы меня слышали — не угадывали, а именно слышали",
   ],
   health: [
     "Хочу начать слышать сигналы своего тела",
@@ -25,7 +25,7 @@ const presets: Record<SphereId, string[]> = {
     "Хочу отдохнуть по-настоящему — физически",
   ],
   career: [
-    "Хочу найти то, что даёт энергию, а не забирает",
+    "Хочу понять — это выгорание или это просто не моё",
     "Хочу сказать «нет» тому, что не моё",
     "Хочу сделать первый шаг к своему делу",
   ],
@@ -45,7 +45,7 @@ const presets: Record<SphereId, string[]> = {
     "Хочу сделать первый шаг к финансовой подушке",
   ],
   rest: [
-    "Хочу научиться останавливаться без чувства вины",
+    "Хочу остановиться без ощущения что я что-то должна",
     "Хочу найти то, что по-настоящему восстанавливает",
     "Хочу защитить время для себя",
   ],
@@ -137,12 +137,10 @@ function GoalScreen() {
     };
     patch({ desired_goal: goal, xp: next.xp, coins: next.coins });
     setStep("fears");
-    try {
-      await save({ data: { id: journeyId, state: next as never, current_step: "fears" } });
-      navigate({ to: "/journey/fears" as never });
-    } finally {
-      setSaving(false);
-    }
+    navigate({ to: "/journey/fears" as never });
+    save({ data: { id: journeyId, state: next as never, current_step: "fears" } })
+      .catch(() => {})
+      .finally(() => setSaving(false));
   };
 
   // Pick the visual to show

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useInterlude } from "@/lib/eva-interlude";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -22,6 +22,16 @@ function AssessScreen() {
   const { state, patch, journeyId, setStep, loaded } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
+
+  // Preload next transition video while user fills in scores
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "video";
+    link.href = "/assets/eva/assess-to-path.mp4";
+    document.head.appendChild(link);
+    return () => { document.head.removeChild(link); };
+  }, []);
 
   const spheres = state.selected_spheres;
   const labelOf = useMemo(

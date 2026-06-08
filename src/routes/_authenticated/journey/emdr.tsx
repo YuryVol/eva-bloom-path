@@ -1,8 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -27,69 +25,6 @@ const SHAPE_LABELS: Record<string, string> = {
 
 
 
-const CONTRAINDICATIONS = [
-  "активные психозы (шизофрения, бредовые расстройства)",
-  "эпилепсия (в стадии нестабильности)",
-  "острые суицидальные состояния",
-  "тяжёлые когнитивные нарушения",
-  "неспособность удерживать внимание",
-  "отсутствие мотивации к участию в терапевтическом процессе",
-];
-
-function EmdrInfoAccordion() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="w-full max-w-2xl">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/60 px-5 py-4 text-left backdrop-blur-sm transition hover:bg-card/80"
-      >
-        <span className="text-sm text-muted-foreground">Что такое EMDR и противопоказания</span>
-        <ChevronDown
-          className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="emdr-info"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="flex flex-col gap-4 rounded-b-2xl border border-t-0 border-border/60 bg-card/40 px-5 py-5 backdrop-blur-sm">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                EMDR активирует естественные механизмы переработки через билатеральную
-                стимуляцию (движения глаз, звуки, тактильные сигналы). Это помогает мозгу
-                «перезаписать» травматичные воспоминания.
-              </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Метод EMDR не заставляет вас месяцами «пережёвывать» травму, а помогает
-                мозгу переработать её на физиологическом уровне.
-              </p>
-              <div>
-                <p className="mb-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
-                  Противопоказания к практике:
-                </p>
-                <ul className="flex flex-col gap-1.5">
-                  {CONTRAINDICATIONS.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-muted-foreground/50" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 function EmdrScreen() {
   const { state, journeyId, setStep, patch } = useJourneyStore();
@@ -166,10 +101,6 @@ function EmdrScreen() {
             </p>
           </div>
 
-
-          <div className="mt-6 w-full max-w-2xl">
-            <EmdrInfoAccordion />
-          </div>
 
           <div className="emdr-practice-card mt-6 w-full max-w-2xl">
             <GlassCard className="p-4 md:p-8">

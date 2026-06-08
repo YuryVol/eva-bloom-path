@@ -66,7 +66,7 @@ function SummaryScreen() {
 
   const handleNewJourney = () => {
     reset();
-    navigate({ to: "/home" as never });
+    navigate({ to: "/journey/spheres" as never });
   };
 
   return (
@@ -178,17 +178,25 @@ function SummaryScreen() {
           <GlowButton onClick={handleNewJourney}>Начать новый путь</GlowButton>
           <button
             type="button"
+            onClick={() => navigate({ to: "/profile" as never })}
+            className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-6 py-2.5 text-sm font-display text-primary/90 transition-all hover:bg-primary/10 hover:text-primary"
+          >
+            Мой прогресс
+          </button>
+          <button
+            type="button"
             onClick={() => handleNativeShare(false, () => setShareOpen(true))}
             className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/30 px-6 py-2.5 text-sm font-display text-foreground/90 transition-all hover:bg-background/60 hover:border-primary/40 hover:text-foreground"
           >
             <Share2 className="h-4 w-4" />
-            Поделиться с другом
+            Поделиться
           </button>
           <button
+            type="button"
             onClick={() => navigate({ to: "/home" as never })}
             className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors"
           >
-            на главную
+            В мир Евы
           </button>
         </div>
       </JourneyScene>

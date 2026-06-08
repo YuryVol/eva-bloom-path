@@ -21,6 +21,7 @@ import { Route as AuthInviteRouteImport } from './routes/auth-invite'
 import { Route as AboutYouRouteImport } from './routes/about-you'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPracticesRouteImport } from './routes/_authenticated/practices'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
@@ -35,6 +36,7 @@ import { Route as AuthenticatedJourneyPathRouteImport } from './routes/_authenti
 import { Route as AuthenticatedJourneyGoalRouteImport } from './routes/_authenticated/journey/goal'
 import { Route as AuthenticatedJourneyFeelingRouteImport } from './routes/_authenticated/journey/feeling'
 import { Route as AuthenticatedJourneyFearsRouteImport } from './routes/_authenticated/journey/fears'
+import { Route as AuthenticatedJourneyEmdrIntroRouteImport } from './routes/_authenticated/journey/emdr-intro'
 import { Route as AuthenticatedJourneyEmdrRouteImport } from './routes/_authenticated/journey/emdr'
 import { Route as AuthenticatedJourneyCurrentStateRouteImport } from './routes/_authenticated/journey/current-state'
 import { Route as AuthenticatedJourneyAssessRouteImport } from './routes/_authenticated/journey/assess'
@@ -97,6 +99,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPracticesRoute = AuthenticatedPracticesRouteImport.update({
   id: '/practices',
@@ -179,6 +186,12 @@ const AuthenticatedJourneyFearsRoute =
     path: '/fears',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedJourneyEmdrIntroRoute =
+  AuthenticatedJourneyEmdrIntroRouteImport.update({
+    id: '/emdr-intro',
+    path: '/emdr-intro',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
 const AuthenticatedJourneyEmdrRoute =
   AuthenticatedJourneyEmdrRouteImport.update({
     id: '/emdr',
@@ -213,9 +226,11 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/journey': typeof AuthenticatedJourneyRouteWithChildren
   '/practices': typeof AuthenticatedPracticesRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
+  '/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
   '/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
   '/journey/goal': typeof AuthenticatedJourneyGoalRoute
@@ -242,9 +257,11 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/home': typeof AuthenticatedHomeRoute
   '/practices': typeof AuthenticatedPracticesRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
+  '/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
   '/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
   '/journey/goal': typeof AuthenticatedJourneyGoalRoute
@@ -274,9 +291,11 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRouteWithChildren
   '/_authenticated/practices': typeof AuthenticatedPracticesRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/_authenticated/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/_authenticated/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
+  '/_authenticated/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
   '/_authenticated/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/_authenticated/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
   '/_authenticated/journey/goal': typeof AuthenticatedJourneyGoalRoute
@@ -306,9 +325,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/journey'
     | '/practices'
+    | '/profile'
     | '/journey/assess'
     | '/journey/current-state'
     | '/journey/emdr'
+    | '/journey/emdr-intro'
     | '/journey/fears'
     | '/journey/feeling'
     | '/journey/goal'
@@ -335,9 +356,11 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/home'
     | '/practices'
+    | '/profile'
     | '/journey/assess'
     | '/journey/current-state'
     | '/journey/emdr'
+    | '/journey/emdr-intro'
     | '/journey/fears'
     | '/journey/feeling'
     | '/journey/goal'
@@ -366,9 +389,11 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/journey'
     | '/_authenticated/practices'
+    | '/_authenticated/profile'
     | '/_authenticated/journey/assess'
     | '/_authenticated/journey/current-state'
     | '/_authenticated/journey/emdr'
+    | '/_authenticated/journey/emdr-intro'
     | '/_authenticated/journey/fears'
     | '/_authenticated/journey/feeling'
     | '/_authenticated/journey/goal'
@@ -483,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/practices': {
       id: '/_authenticated/practices'
       path: '/practices'
@@ -581,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneyFearsRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/journey/emdr-intro': {
+      id: '/_authenticated/journey/emdr-intro'
+      path: '/emdr-intro'
+      fullPath: '/journey/emdr-intro'
+      preLoaderRoute: typeof AuthenticatedJourneyEmdrIntroRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
     '/_authenticated/journey/emdr': {
       id: '/_authenticated/journey/emdr'
       path: '/emdr'
@@ -609,6 +648,7 @@ interface AuthenticatedJourneyRouteChildren {
   AuthenticatedJourneyAssessRoute: typeof AuthenticatedJourneyAssessRoute
   AuthenticatedJourneyCurrentStateRoute: typeof AuthenticatedJourneyCurrentStateRoute
   AuthenticatedJourneyEmdrRoute: typeof AuthenticatedJourneyEmdrRoute
+  AuthenticatedJourneyEmdrIntroRoute: typeof AuthenticatedJourneyEmdrIntroRoute
   AuthenticatedJourneyFearsRoute: typeof AuthenticatedJourneyFearsRoute
   AuthenticatedJourneyFeelingRoute: typeof AuthenticatedJourneyFeelingRoute
   AuthenticatedJourneyGoalRoute: typeof AuthenticatedJourneyGoalRoute
@@ -626,6 +666,7 @@ const AuthenticatedJourneyRouteChildren: AuthenticatedJourneyRouteChildren = {
   AuthenticatedJourneyAssessRoute: AuthenticatedJourneyAssessRoute,
   AuthenticatedJourneyCurrentStateRoute: AuthenticatedJourneyCurrentStateRoute,
   AuthenticatedJourneyEmdrRoute: AuthenticatedJourneyEmdrRoute,
+  AuthenticatedJourneyEmdrIntroRoute: AuthenticatedJourneyEmdrIntroRoute,
   AuthenticatedJourneyFearsRoute: AuthenticatedJourneyFearsRoute,
   AuthenticatedJourneyFeelingRoute: AuthenticatedJourneyFeelingRoute,
   AuthenticatedJourneyGoalRoute: AuthenticatedJourneyGoalRoute,
@@ -647,12 +688,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRouteWithChildren
   AuthenticatedPracticesRoute: typeof AuthenticatedPracticesRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRouteWithChildren,
   AuthenticatedPracticesRoute: AuthenticatedPracticesRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

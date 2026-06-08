@@ -185,9 +185,18 @@ export const completeJourney = createServerFn({ method: "POST" })
     const xp_total = (profile?.xp_total ?? 0) + xp_awarded;
     const coins_total = (profile?.coins_total ?? 0) + coins_awarded;
 
+    // If the user committed to a first step, schedule a follow-up reminder in 3 days
+    const firstStepText = (journey.state as Record<string, unknown>)?.first_step as string | undefined;
+    const upsertPayload: Record<string, unknown> = { id: userId, xp_total, coins_total };
+    if (firstStepText) {
+      upsertPayload.first_step_text = firstStepText;
+      upsertPayload.first_step_reminder_at = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+      upsertPayload.first_step_reminded = false;
+    }
+
     const { data: updatedProfile, error: pErr } = await supabase
       .from("profiles")
-      .upsert({ id: userId, xp_total, coins_total })
+      .upsert(upsertPayload)
       .select("telegram_chat_id")
       .maybeSingle();
     if (pErr) {

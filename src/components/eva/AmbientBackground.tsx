@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 type Theme = "safe" | "shadow" | "relief" | "tension" | "light" | "growth";
 
 const gradients: Record<Theme, string> = {
@@ -13,7 +15,7 @@ const gradients: Record<Theme, string> = {
  * Calm, warm parchment background with a soft animated glow.
  * No harsh particles — keeps the wellness/therapeutic feel.
  */
-export function AmbientBackground({ theme = "safe" }: { theme?: Theme }) {
+export const AmbientBackground = memo(function AmbientBackground({ theme = "safe" }: { theme?: Theme }) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div
@@ -38,4 +40,4 @@ export function AmbientBackground({ theme = "safe" }: { theme?: Theme }) {
       />
     </div>
   );
-}
+});

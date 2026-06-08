@@ -81,7 +81,7 @@ function ResistanceShapeScreen() {
         data: { id: journeyId, state: next as never, current_step: "emdr" },
       });
       await useInterlude.getState().play("shape-to-emdr", 0);
-      navigate({ to: "/journey/emdr" as never });
+      navigate({ to: "/journey/emdr-intro" as never });
     } finally {
       setSaving(false);
     }

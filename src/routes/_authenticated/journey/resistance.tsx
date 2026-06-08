@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -29,6 +29,16 @@ function ResistanceScreen() {
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
+  // Preload EMDR loop video while user rates resistance
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "video";
+    link.href = "/assets/eva/video/step-10-emdr-butterfly-pose-loop.mp4";
+    document.head.appendChild(link);
+    return () => { document.head.removeChild(link); };
+  }, []);
+
   const [value, setValue] = useState<number>(
     typeof state.resistance_score_before === "number" ? state.resistance_score_before : 5,
   );
@@ -46,14 +56,10 @@ function ResistanceScreen() {
     };
     patch({ resistance_score_before: value, xp: next.xp });
     setStep("resistance-shape");
-    try {
-      await save({
-        data: { id: journeyId, state: next as never, current_step: "resistance-shape" },
-      });
-      navigate({ to: "/journey/resistance-shape" as never });
-    } finally {
-      setSaving(false);
-    }
+    navigate({ to: "/journey/resistance-shape" as never });
+    save({ data: { id: journeyId, state: next as never, current_step: "resistance-shape" } })
+      .catch(() => {})
+      .finally(() => setSaving(false));
   };
 
   return (
