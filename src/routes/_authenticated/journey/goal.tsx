@@ -57,15 +57,51 @@ const presets: Record<SphereId, string[]> = {
 };
 
 const DEFAULT_HERO: SceneVisual = {
-  src: "/assets/eva/eva-listening-nearby.svg",
+  src: "/assets/eva/eva-close.png",
   alt: "Ева тихо слушает рядом с тобой",
   objectPosition: "center center",
 };
 
+// These use the same hero images as path.tsx — once path-*.png files are in public/assets/eva/, they appear here too
 const SPHERE_DEFAULT_VISUALS: Partial<Record<SphereId, SceneVisual>> = {
   relationships: {
-    src: "/assets/eva/goals/goaldefault.png",
-    alt: "Ева ждёт твою цель",
+    src: "/assets/eva/path-relationships.png",
+    alt: "Ева слушает тебя",
+    objectPosition: "center 30%",
+  },
+  family: {
+    src: "/assets/eva/path-family.png",
+    alt: "Семья",
+    objectPosition: "center 30%",
+  },
+  career: {
+    src: "/assets/eva/path-career.png",
+    alt: "Призвание",
+    objectPosition: "center 30%",
+  },
+  growth: {
+    src: "/assets/eva/path-growth.png",
+    alt: "Развитие",
+    objectPosition: "center 30%",
+  },
+  finance: {
+    src: "/assets/eva/path-finance.png",
+    alt: "Финансы",
+    objectPosition: "center 30%",
+  },
+  rest: {
+    src: "/assets/eva/path-rest.png",
+    alt: "Отдых",
+    objectPosition: "center 30%",
+  },
+  people: {
+    src: "/assets/eva/path-people.png",
+    alt: "Окружение",
+    objectPosition: "center 30%",
+  },
+  health: {
+    src: "/assets/eva/path-health.png",
+    alt: "Здоровье",
     objectPosition: "center 30%",
   },
 };

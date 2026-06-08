@@ -99,16 +99,24 @@ function AssessScreen() {
         </div>
 
         <div className="mt-5 space-y-3">
-          {spheres.map((id) => (
-            <GlassCard key={id} className="p-4">
-              <Slider010
-                variant="compact"
-                label={labelOf[id]}
-                value={state.sphere_scores[id] ?? 5}
-                onChange={(v) => setScore(id, v)}
-              />
-            </GlassCard>
-          ))}
+          {spheres.map((id) => {
+            const score = state.sphere_scores[id] ?? 5;
+            const emoji = score <= 3 ? "🍂" : score <= 6 ? "🌿" : "🌱";
+            const hint = score <= 3 ? "Сейчас сложно" : score <= 6 ? "Держится" : "Прорастает";
+            return (
+              <GlassCard key={id} className="p-4">
+                <Slider010
+                  variant="compact"
+                  label={labelOf[id]}
+                  value={score}
+                  onChange={(v) => setScore(id, v)}
+                />
+                <p className="mt-2 text-center text-xs text-muted-foreground/70">
+                  {emoji} {hint}
+                </p>
+              </GlassCard>
+            );
+          })}
         </div>
 
         <div className="mt-6 flex justify-center md:justify-start">

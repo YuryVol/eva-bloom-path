@@ -26,7 +26,8 @@ const AGE_OPTIONS = (() => {
 
 function AboutYouScreen() {
   const navigate = useNavigate();
-  const { user_name, user_age, user_roles, set } = useOnboardingDraft();
+  const { user_name, user_age, user_roles, address_form, set } = useOnboardingDraft();
+  const formal = address_form === "вы";
 
   const toggleRole = (r: string) => {
     if (user_roles.includes(r)) {
@@ -57,13 +58,31 @@ function AboutYouScreen() {
           Я — Ева. Давай познакомимся
         </h1>
         <p className="mt-1 text-center text-xs text-muted-foreground">
-          Несколько мягких вопросов, чтобы я обращалась к тебе по-настоящему.
+          Несколько мягких вопросов, чтобы я обращалась {formal ? "к вам" : "к тебе"} по-настоящему.
         </p>
+
+        {/* Address form toggle */}
+        <div className="mt-3 flex items-center gap-2 rounded-full border border-border/60 bg-card/40 p-1">
+          {(["ты", "вы"] as const).map((form) => (
+            <button
+              key={form}
+              type="button"
+              onClick={() => set({ address_form: form })}
+              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-all duration-200 ${
+                address_form === form
+                  ? "bg-primary/15 text-foreground shadow-sm border border-primary/40"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              На «{form}»
+            </button>
+          ))}
+        </div>
 
         <div className="mt-3 w-full space-y-3">
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-              Как к тебе обращаться?
+              Как {formal ? "к вам" : "к тебе"} обращаться?
             </label>
             <input
               type="text"
@@ -77,7 +96,7 @@ function AboutYouScreen() {
 
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-              Сколько тебе лет?
+              Сколько {formal ? "вам" : "тебе"} лет?
             </label>
             <select
               value={user_age ?? ""}
@@ -99,7 +118,7 @@ function AboutYouScreen() {
 
           <div>
             <label className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-              Чем занимаешься?
+              Чем {formal ? "занимаетесь" : "занимаешься"}?
             </label>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {ROLE_OPTIONS.map((r) => {
