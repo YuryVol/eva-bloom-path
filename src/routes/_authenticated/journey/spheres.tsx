@@ -1,11 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { toast } from "sonner";
 
 import { useJourneyStore } from "@/lib/journey-store";
+import { useAddress } from "@/lib/use-address";
 import { updateJourney } from "@/lib/journey.functions";
 import { SPHERES, type SphereId } from "@/lib/journey-types";
+import { checkJourneyLimit, recordJourneyStart } from "@/lib/premium.functions";
+import { PremiumGateSheet } from "@/components/premium/PremiumGateSheet";
+import { PremiumBadge } from "@/components/premium/PremiumBadge";
 
 export const Route = createFileRoute("/_authenticated/journey/spheres")({
   component: SpheresScreen,
@@ -50,11 +53,44 @@ const SPHERE_POS: Record<SphereId, { left: string; top: string }> = {
 };
 
 function SpheresScreen() {
+  const a = useAddress();
   const { state, patch, journeyId, setStep } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
+  const fetchLimits = useServerFn(checkJourneyLimit);
+  const doRecordStart = useServerFn(recordJourneyStart);
   const selected = state.selected_spheres;
   const maxed = selected.length >= 3;
+
+  // Premium limits
+  const [limitMap, setLimitMap] = useState<Record<string, boolean>>({});
+  const [isPremium, setIsPremium] = useState(true); // optimistic — show gate only when loaded
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
+  const [limitedSphere, setLimitedSphere] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchLimits()
+      .then(({ isPremium: p, limitMap: lm }) => { setIsPremium(p); setLimitMap(lm); })
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Countdown to midnight
+  const [countdown, setCountdown] = useState("");
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setDate(midnight.getDate() + 1);
+      midnight.setHours(0, 0, 0, 0);
+      const diff = midnight.getTime() - now.getTime();
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      setCountdown(`${h}ч ${m}м`);
+    };
+    tick();
+    const t = setInterval(tick, 60000);
+    return () => clearInterval(t);
+  }, []);
 
 
   // ---------- Intro video overlay state ----------
@@ -135,6 +171,12 @@ function SpheresScreen() {
   };
 
   const toggle = (id: SphereId) => {
+    // Check free-user daily limit
+    if (!isPremium && limitMap[id]) {
+      setLimitedSphere(id);
+      setShowPremiumGate(true);
+      return;
+    }
     if (selected.includes(id)) {
       patch({ selected_spheres: selected.filter((s) => s !== id) });
     } else if (!maxed) {
@@ -144,18 +186,20 @@ function SpheresScreen() {
 
   const handleNext = async () => {
     if (selected.length !== 3) return;
-    if (!journeyId) {
-      toast.error("Путешествие ещё загружается, подожди секунду");
-      return;
-    }
-    try {
-      setStep("assess");
-      await save({ data: { id: journeyId, state: state as never, current_step: "assess" } });
-      navigate({ to: "/journey/assess" as never });
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Не удалось сохранить выбор");
+    // Record journey start for free-user limit tracking (fire-and-forget)
+    void doRecordStart();
+    setStep("assess");
+    navigate({ to: "/journey/assess" as never });
+    if (journeyId) {
+      save({ data: { id: journeyId, state: state as never, current_step: "assess" } })
+        .catch((e) => console.warn("[spheres] save failed (non-fatal):", e));
     }
   };
+
+  const limitedSphereLabel = limitedSphere
+    ? (SPHERES.find((s) => s.id === limitedSphere)?.label ?? "")
+    : "";
+  void limitedSphereLabel; // used in sheet description via feature prop
 
   return (
     <div className="relative h-full w-full">
@@ -216,7 +260,7 @@ function SpheresScreen() {
                 fontStyle: "italic",
               }}
             >
-              Выбери три сферы жизни, к которым хочешь прикоснуться сегодня.
+              {a.vy ? "Выберите три сферы жизни, к которым хотите прикоснуться сегодня." : "Выбери три сферы жизни, к которым хочешь прикоснуться сегодня."}
             </p>
           </div>
 
@@ -224,8 +268,8 @@ function SpheresScreen() {
           <div
             className="spheres-stage relative shrink-0"
             style={{
-              width: "min(720px, 92vw)",
-              height: "clamp(560px, 68vh, 720px)",
+              width: "min(1200px, 96vw)",
+              height: "clamp(580px, 78vh, 960px)",
               margin: "32px auto 24px",
               overflow: "visible",
             }}
@@ -241,7 +285,7 @@ function SpheresScreen() {
                 left: "50%",
                 top: "48%",
                 transform: "translate(-50%, -50%)",
-                width: "clamp(80px, 10.7vw, 113px)",
+                width: "clamp(80px, 8.5vw, 170px)",
                 height: "auto",
                 zIndex: 5,
                 pointerEvents: "none",
@@ -254,7 +298,8 @@ function SpheresScreen() {
               const sphere = SPHERES.find((s) => s.id === id)!;
               const pos = SPHERE_POS[id];
               const isSel = selected.includes(id);
-              const isInactive = maxed && !isSel;
+              const isLimited = !isPremium && !!limitMap[id];
+              const isInactive = (maxed && !isSel) || isLimited;
               return (
                 <button
                   key={id}
@@ -262,15 +307,15 @@ function SpheresScreen() {
                   onClick={() => toggle(id)}
                   aria-pressed={isSel}
                   aria-label={sphere.label}
-                  disabled={isInactive}
+                  disabled={isInactive && !isLimited}
                   className="sphere-node focus:outline-none"
                   style={{
                     position: "absolute",
                     left: pos.left,
                     top: pos.top,
                     transform: "translate(-50%, -50%)",
-                    width: "clamp(79px, 8.7vw, 100px)",
-                    height: "clamp(85px, 9.3vw, 110px)",
+                    width: "clamp(90px, 8vw, 150px)",
+                    height: "clamp(100px, 8.5vw, 165px)",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -315,10 +360,17 @@ function SpheresScreen() {
                       }}
                     />
                   </div>
+                  {/* Daily limit indicator */}
+                  {isLimited && (
+                    <div className="absolute -top-1 -right-1 z-10 flex flex-col items-center gap-0.5">
+                      <span className="text-base">🔒</span>
+                      <span style={{ fontSize: 9, color: "#9B8470", whiteSpace: "nowrap" }}>{countdown}</span>
+                    </div>
+                  )}
                   <span
                     className="sphere-label"
                     style={{
-                      fontSize: "clamp(12px, 1.1vw, 16px)",
+                      fontSize: "clamp(12px, 1.2vw, 18px)",
                       lineHeight: 1.1,
                       textAlign: "center",
                       whiteSpace: "nowrap",
@@ -411,6 +463,13 @@ function SpheresScreen() {
           </button>
         </div>
       )}
+
+      {/* Premium gate for daily limit */}
+      <PremiumGateSheet
+        open={showPremiumGate}
+        feature="journey_limit"
+        onClose={() => setShowPremiumGate(false)}
+      />
     </div>
   );
 }

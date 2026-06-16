@@ -18,28 +18,61 @@ import { Route as IntroRouteImport } from './routes/intro'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as AuthInviteRouteImport } from './routes/auth-invite'
+import { Route as AuthCallbackRouteImport } from './routes/auth-callback'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutYouRouteImport } from './routes/about-you'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PremiumPaywallRouteImport } from './routes/premium/paywall'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
+import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
+import { Route as AdminFunnelRouteImport } from './routes/admin/funnel'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPracticesRouteImport } from './routes/_authenticated/practices'
+import { Route as AuthenticatedOpportunitiesRouteImport } from './routes/_authenticated/opportunities'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
 import { Route as AuthenticatedJourneyIndexRouteImport } from './routes/_authenticated/journey/index'
+import { Route as AuthenticatedPracticesPracticeIdRouteImport } from './routes/_authenticated/practices_/$practiceId'
+import { Route as AuthenticatedPartnersPsychologistRouteImport } from './routes/_authenticated/partners/psychologist'
 import { Route as AuthenticatedJourneySummaryRouteImport } from './routes/_authenticated/journey/summary'
 import { Route as AuthenticatedJourneySuccessRouteImport } from './routes/_authenticated/journey/success'
 import { Route as AuthenticatedJourneySpheresRouteImport } from './routes/_authenticated/journey/spheres'
+import { Route as AuthenticatedJourneySphereTaskRelationshipsRouteImport } from './routes/_authenticated/journey/sphere-task-relationships'
+import { Route as AuthenticatedJourneySphereTaskHealthRouteImport } from './routes/_authenticated/journey/sphere-task-health'
+import { Route as AuthenticatedJourneySphereTaskCareerRouteImport } from './routes/_authenticated/journey/sphere-task-career'
+import { Route as AuthenticatedJourneySomaticWorkRouteImport } from './routes/_authenticated/journey/somatic-work'
+import { Route as AuthenticatedJourneySelfLetterRouteImport } from './routes/_authenticated/journey/self-letter'
+import { Route as AuthenticatedJourneyRestEntryRouteImport } from './routes/_authenticated/journey/rest-entry'
 import { Route as AuthenticatedJourneyResistanceShapeRouteImport } from './routes/_authenticated/journey/resistance-shape'
 import { Route as AuthenticatedJourneyResistanceRouteImport } from './routes/_authenticated/journey/resistance'
+import { Route as AuthenticatedJourneyRelEntryRouteImport } from './routes/_authenticated/journey/rel-entry'
 import { Route as AuthenticatedJourneyReassessRouteImport } from './routes/_authenticated/journey/reassess'
+import { Route as AuthenticatedJourneyPracticeSelectRouteImport } from './routes/_authenticated/journey/practice-select'
+import { Route as AuthenticatedJourneyPracticeRunRouteImport } from './routes/_authenticated/journey/practice-run'
+import { Route as AuthenticatedJourneyPolarityMapRouteImport } from './routes/_authenticated/journey/polarity-map'
+import { Route as AuthenticatedJourneyPeopleEntryRouteImport } from './routes/_authenticated/journey/people-entry'
 import { Route as AuthenticatedJourneyPathRouteImport } from './routes/_authenticated/journey/path'
+import { Route as AuthenticatedJourneyNarrativeWriteRouteImport } from './routes/_authenticated/journey/narrative-write'
+import { Route as AuthenticatedJourneyHealthEntryRouteImport } from './routes/_authenticated/journey/health-entry'
+import { Route as AuthenticatedJourneyGrowthEntryRouteImport } from './routes/_authenticated/journey/growth-entry'
+import { Route as AuthenticatedJourneyGratitudeFocusRouteImport } from './routes/_authenticated/journey/gratitude-focus'
 import { Route as AuthenticatedJourneyGoalRouteImport } from './routes/_authenticated/journey/goal'
+import { Route as AuthenticatedJourneyFinanceEntryRouteImport } from './routes/_authenticated/journey/finance-entry'
 import { Route as AuthenticatedJourneyFeelingRouteImport } from './routes/_authenticated/journey/feeling'
 import { Route as AuthenticatedJourneyFearsRouteImport } from './routes/_authenticated/journey/fears'
+import { Route as AuthenticatedJourneyFearReframeRouteImport } from './routes/_authenticated/journey/fear-reframe'
+import { Route as AuthenticatedJourneyFamEntryRouteImport } from './routes/_authenticated/journey/fam-entry'
 import { Route as AuthenticatedJourneyEmdrIntroRouteImport } from './routes/_authenticated/journey/emdr-intro'
 import { Route as AuthenticatedJourneyEmdrRouteImport } from './routes/_authenticated/journey/emdr'
 import { Route as AuthenticatedJourneyCurrentStateRouteImport } from './routes/_authenticated/journey/current-state'
+import { Route as AuthenticatedJourneyCreativeExpressRouteImport } from './routes/_authenticated/journey/creative-express'
+import { Route as AuthenticatedJourneyCareerEntryRouteImport } from './routes/_authenticated/journey/career-entry'
+import { Route as AuthenticatedJourneyBreathingWorkRouteImport } from './routes/_authenticated/journey/breathing-work'
 import { Route as AuthenticatedJourneyAssessRouteImport } from './routes/_authenticated/journey/assess'
+import { Route as AuthenticatedPracticesRunComponentKeyRouteImport } from './routes/_authenticated/practices_/run/$componentKey'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -86,6 +119,16 @@ const AuthInviteRoute = AuthInviteRouteImport.update({
   path: '/auth-invite',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth-callback',
+  path: '/auth-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutYouRoute = AboutYouRouteImport.update({
   id: '/about-you',
   path: '/about-you',
@@ -100,6 +143,31 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PremiumPaywallRoute = PremiumPaywallRouteImport.update({
+  id: '/premium/paywall',
+  path: '/premium/paywall',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPartnersRoute = AdminPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOverviewRoute = AdminOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFunnelRoute = AdminFunnelRouteImport.update({
+  id: '/funnel',
+  path: '/funnel',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -110,6 +178,12 @@ const AuthenticatedPracticesRoute = AuthenticatedPracticesRouteImport.update({
   path: '/practices',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedOpportunitiesRoute =
+  AuthenticatedOpportunitiesRouteImport.update({
+    id: '/opportunities',
+    path: '/opportunities',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedJourneyRoute = AuthenticatedJourneyRouteImport.update({
   id: '/journey',
   path: '/journey',
@@ -120,11 +194,28 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedJourneyIndexRoute =
   AuthenticatedJourneyIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedPracticesPracticeIdRoute =
+  AuthenticatedPracticesPracticeIdRouteImport.update({
+    id: '/practices_/$practiceId',
+    path: '/practices/$practiceId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPartnersPsychologistRoute =
+  AuthenticatedPartnersPsychologistRouteImport.update({
+    id: '/partners/psychologist',
+    path: '/partners/psychologist',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedJourneySummaryRoute =
   AuthenticatedJourneySummaryRouteImport.update({
@@ -144,6 +235,42 @@ const AuthenticatedJourneySpheresRoute =
     path: '/spheres',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedJourneySphereTaskRelationshipsRoute =
+  AuthenticatedJourneySphereTaskRelationshipsRouteImport.update({
+    id: '/sphere-task-relationships',
+    path: '/sphere-task-relationships',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneySphereTaskHealthRoute =
+  AuthenticatedJourneySphereTaskHealthRouteImport.update({
+    id: '/sphere-task-health',
+    path: '/sphere-task-health',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneySphereTaskCareerRoute =
+  AuthenticatedJourneySphereTaskCareerRouteImport.update({
+    id: '/sphere-task-career',
+    path: '/sphere-task-career',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneySomaticWorkRoute =
+  AuthenticatedJourneySomaticWorkRouteImport.update({
+    id: '/somatic-work',
+    path: '/somatic-work',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneySelfLetterRoute =
+  AuthenticatedJourneySelfLetterRouteImport.update({
+    id: '/self-letter',
+    path: '/self-letter',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyRestEntryRoute =
+  AuthenticatedJourneyRestEntryRouteImport.update({
+    id: '/rest-entry',
+    path: '/rest-entry',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
 const AuthenticatedJourneyResistanceShapeRoute =
   AuthenticatedJourneyResistanceShapeRouteImport.update({
     id: '/resistance-shape',
@@ -156,10 +283,40 @@ const AuthenticatedJourneyResistanceRoute =
     path: '/resistance',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedJourneyRelEntryRoute =
+  AuthenticatedJourneyRelEntryRouteImport.update({
+    id: '/rel-entry',
+    path: '/rel-entry',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
 const AuthenticatedJourneyReassessRoute =
   AuthenticatedJourneyReassessRouteImport.update({
     id: '/reassess',
     path: '/reassess',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyPracticeSelectRoute =
+  AuthenticatedJourneyPracticeSelectRouteImport.update({
+    id: '/practice-select',
+    path: '/practice-select',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyPracticeRunRoute =
+  AuthenticatedJourneyPracticeRunRouteImport.update({
+    id: '/practice-run',
+    path: '/practice-run',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyPolarityMapRoute =
+  AuthenticatedJourneyPolarityMapRouteImport.update({
+    id: '/polarity-map',
+    path: '/polarity-map',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyPeopleEntryRoute =
+  AuthenticatedJourneyPeopleEntryRouteImport.update({
+    id: '/people-entry',
+    path: '/people-entry',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
 const AuthenticatedJourneyPathRoute =
@@ -168,10 +325,40 @@ const AuthenticatedJourneyPathRoute =
     path: '/path',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedJourneyNarrativeWriteRoute =
+  AuthenticatedJourneyNarrativeWriteRouteImport.update({
+    id: '/narrative-write',
+    path: '/narrative-write',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyHealthEntryRoute =
+  AuthenticatedJourneyHealthEntryRouteImport.update({
+    id: '/health-entry',
+    path: '/health-entry',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyGrowthEntryRoute =
+  AuthenticatedJourneyGrowthEntryRouteImport.update({
+    id: '/growth-entry',
+    path: '/growth-entry',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyGratitudeFocusRoute =
+  AuthenticatedJourneyGratitudeFocusRouteImport.update({
+    id: '/gratitude-focus',
+    path: '/gratitude-focus',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
 const AuthenticatedJourneyGoalRoute =
   AuthenticatedJourneyGoalRouteImport.update({
     id: '/goal',
     path: '/goal',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyFinanceEntryRoute =
+  AuthenticatedJourneyFinanceEntryRouteImport.update({
+    id: '/finance-entry',
+    path: '/finance-entry',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
 const AuthenticatedJourneyFeelingRoute =
@@ -184,6 +371,18 @@ const AuthenticatedJourneyFearsRoute =
   AuthenticatedJourneyFearsRouteImport.update({
     id: '/fears',
     path: '/fears',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyFearReframeRoute =
+  AuthenticatedJourneyFearReframeRouteImport.update({
+    id: '/fear-reframe',
+    path: '/fear-reframe',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyFamEntryRoute =
+  AuthenticatedJourneyFamEntryRouteImport.update({
+    id: '/fam-entry',
+    path: '/fam-entry',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
 const AuthenticatedJourneyEmdrIntroRoute =
@@ -204,16 +403,42 @@ const AuthenticatedJourneyCurrentStateRoute =
     path: '/current-state',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedJourneyCreativeExpressRoute =
+  AuthenticatedJourneyCreativeExpressRouteImport.update({
+    id: '/creative-express',
+    path: '/creative-express',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyCareerEntryRoute =
+  AuthenticatedJourneyCareerEntryRouteImport.update({
+    id: '/career-entry',
+    path: '/career-entry',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
+const AuthenticatedJourneyBreathingWorkRoute =
+  AuthenticatedJourneyBreathingWorkRouteImport.update({
+    id: '/breathing-work',
+    path: '/breathing-work',
+    getParentRoute: () => AuthenticatedJourneyRoute,
+  } as any)
 const AuthenticatedJourneyAssessRoute =
   AuthenticatedJourneyAssessRouteImport.update({
     id: '/assess',
     path: '/assess',
     getParentRoute: () => AuthenticatedJourneyRoute,
   } as any)
+const AuthenticatedPracticesRunComponentKeyRoute =
+  AuthenticatedPracticesRunComponentKeyRouteImport.update({
+    id: '/practices_/run/$componentKey',
+    path: '/practices/run/$componentKey',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about-you': typeof AboutYouRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth-callback': typeof AuthCallbackRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
   '/emergency': typeof EmergencyRoute
@@ -223,29 +448,62 @@ export interface FileRoutesByFullPath {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/help': typeof AuthenticatedHelpRoute
   '/home': typeof AuthenticatedHomeRoute
   '/journey': typeof AuthenticatedJourneyRouteWithChildren
+  '/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/practices': typeof AuthenticatedPracticesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/funnel': typeof AdminFunnelRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/premium/paywall': typeof PremiumPaywallRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
+  '/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
+  '/journey/career-entry': typeof AuthenticatedJourneyCareerEntryRoute
+  '/journey/creative-express': typeof AuthenticatedJourneyCreativeExpressRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
   '/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
+  '/journey/fam-entry': typeof AuthenticatedJourneyFamEntryRoute
+  '/journey/fear-reframe': typeof AuthenticatedJourneyFearReframeRoute
   '/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
+  '/journey/finance-entry': typeof AuthenticatedJourneyFinanceEntryRoute
   '/journey/goal': typeof AuthenticatedJourneyGoalRoute
+  '/journey/gratitude-focus': typeof AuthenticatedJourneyGratitudeFocusRoute
+  '/journey/growth-entry': typeof AuthenticatedJourneyGrowthEntryRoute
+  '/journey/health-entry': typeof AuthenticatedJourneyHealthEntryRoute
+  '/journey/narrative-write': typeof AuthenticatedJourneyNarrativeWriteRoute
   '/journey/path': typeof AuthenticatedJourneyPathRoute
+  '/journey/people-entry': typeof AuthenticatedJourneyPeopleEntryRoute
+  '/journey/polarity-map': typeof AuthenticatedJourneyPolarityMapRoute
+  '/journey/practice-run': typeof AuthenticatedJourneyPracticeRunRoute
+  '/journey/practice-select': typeof AuthenticatedJourneyPracticeSelectRoute
   '/journey/reassess': typeof AuthenticatedJourneyReassessRoute
+  '/journey/rel-entry': typeof AuthenticatedJourneyRelEntryRoute
   '/journey/resistance': typeof AuthenticatedJourneyResistanceRoute
   '/journey/resistance-shape': typeof AuthenticatedJourneyResistanceShapeRoute
+  '/journey/rest-entry': typeof AuthenticatedJourneyRestEntryRoute
+  '/journey/self-letter': typeof AuthenticatedJourneySelfLetterRoute
+  '/journey/somatic-work': typeof AuthenticatedJourneySomaticWorkRoute
+  '/journey/sphere-task-career': typeof AuthenticatedJourneySphereTaskCareerRoute
+  '/journey/sphere-task-health': typeof AuthenticatedJourneySphereTaskHealthRoute
+  '/journey/sphere-task-relationships': typeof AuthenticatedJourneySphereTaskRelationshipsRoute
   '/journey/spheres': typeof AuthenticatedJourneySpheresRoute
   '/journey/success': typeof AuthenticatedJourneySuccessRoute
   '/journey/summary': typeof AuthenticatedJourneySummaryRoute
+  '/partners/psychologist': typeof AuthenticatedPartnersPsychologistRoute
+  '/practices/$practiceId': typeof AuthenticatedPracticesPracticeIdRoute
   '/journey/': typeof AuthenticatedJourneyIndexRoute
+  '/practices/run/$componentKey': typeof AuthenticatedPracticesRunComponentKeyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about-you': typeof AboutYouRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth-callback': typeof AuthCallbackRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
   '/emergency': typeof EmergencyRoute
@@ -255,30 +513,63 @@ export interface FileRoutesByTo {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/help': typeof AuthenticatedHelpRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/practices': typeof AuthenticatedPracticesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/funnel': typeof AdminFunnelRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/premium/paywall': typeof PremiumPaywallRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
+  '/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
+  '/journey/career-entry': typeof AuthenticatedJourneyCareerEntryRoute
+  '/journey/creative-express': typeof AuthenticatedJourneyCreativeExpressRoute
   '/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
   '/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
+  '/journey/fam-entry': typeof AuthenticatedJourneyFamEntryRoute
+  '/journey/fear-reframe': typeof AuthenticatedJourneyFearReframeRoute
   '/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
+  '/journey/finance-entry': typeof AuthenticatedJourneyFinanceEntryRoute
   '/journey/goal': typeof AuthenticatedJourneyGoalRoute
+  '/journey/gratitude-focus': typeof AuthenticatedJourneyGratitudeFocusRoute
+  '/journey/growth-entry': typeof AuthenticatedJourneyGrowthEntryRoute
+  '/journey/health-entry': typeof AuthenticatedJourneyHealthEntryRoute
+  '/journey/narrative-write': typeof AuthenticatedJourneyNarrativeWriteRoute
   '/journey/path': typeof AuthenticatedJourneyPathRoute
+  '/journey/people-entry': typeof AuthenticatedJourneyPeopleEntryRoute
+  '/journey/polarity-map': typeof AuthenticatedJourneyPolarityMapRoute
+  '/journey/practice-run': typeof AuthenticatedJourneyPracticeRunRoute
+  '/journey/practice-select': typeof AuthenticatedJourneyPracticeSelectRoute
   '/journey/reassess': typeof AuthenticatedJourneyReassessRoute
+  '/journey/rel-entry': typeof AuthenticatedJourneyRelEntryRoute
   '/journey/resistance': typeof AuthenticatedJourneyResistanceRoute
   '/journey/resistance-shape': typeof AuthenticatedJourneyResistanceShapeRoute
+  '/journey/rest-entry': typeof AuthenticatedJourneyRestEntryRoute
+  '/journey/self-letter': typeof AuthenticatedJourneySelfLetterRoute
+  '/journey/somatic-work': typeof AuthenticatedJourneySomaticWorkRoute
+  '/journey/sphere-task-career': typeof AuthenticatedJourneySphereTaskCareerRoute
+  '/journey/sphere-task-health': typeof AuthenticatedJourneySphereTaskHealthRoute
+  '/journey/sphere-task-relationships': typeof AuthenticatedJourneySphereTaskRelationshipsRoute
   '/journey/spheres': typeof AuthenticatedJourneySpheresRoute
   '/journey/success': typeof AuthenticatedJourneySuccessRoute
   '/journey/summary': typeof AuthenticatedJourneySummaryRoute
+  '/partners/psychologist': typeof AuthenticatedPartnersPsychologistRoute
+  '/practices/$practiceId': typeof AuthenticatedPracticesPracticeIdRoute
   '/journey': typeof AuthenticatedJourneyIndexRoute
+  '/practices/run/$componentKey': typeof AuthenticatedPracticesRunComponentKeyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about-you': typeof AboutYouRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/auth-callback': typeof AuthCallbackRoute
   '/auth-invite': typeof AuthInviteRoute
   '/disclaimer': typeof DisclaimerRoute
   '/emergency': typeof EmergencyRoute
@@ -288,31 +579,64 @@ export interface FileRoutesById {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRouteWithChildren
+  '/_authenticated/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/_authenticated/practices': typeof AuthenticatedPracticesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/admin/funnel': typeof AdminFunnelRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/partners': typeof AdminPartnersRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/premium/paywall': typeof PremiumPaywallRoute
   '/_authenticated/journey/assess': typeof AuthenticatedJourneyAssessRoute
+  '/_authenticated/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
+  '/_authenticated/journey/career-entry': typeof AuthenticatedJourneyCareerEntryRoute
+  '/_authenticated/journey/creative-express': typeof AuthenticatedJourneyCreativeExpressRoute
   '/_authenticated/journey/current-state': typeof AuthenticatedJourneyCurrentStateRoute
   '/_authenticated/journey/emdr': typeof AuthenticatedJourneyEmdrRoute
   '/_authenticated/journey/emdr-intro': typeof AuthenticatedJourneyEmdrIntroRoute
+  '/_authenticated/journey/fam-entry': typeof AuthenticatedJourneyFamEntryRoute
+  '/_authenticated/journey/fear-reframe': typeof AuthenticatedJourneyFearReframeRoute
   '/_authenticated/journey/fears': typeof AuthenticatedJourneyFearsRoute
   '/_authenticated/journey/feeling': typeof AuthenticatedJourneyFeelingRoute
+  '/_authenticated/journey/finance-entry': typeof AuthenticatedJourneyFinanceEntryRoute
   '/_authenticated/journey/goal': typeof AuthenticatedJourneyGoalRoute
+  '/_authenticated/journey/gratitude-focus': typeof AuthenticatedJourneyGratitudeFocusRoute
+  '/_authenticated/journey/growth-entry': typeof AuthenticatedJourneyGrowthEntryRoute
+  '/_authenticated/journey/health-entry': typeof AuthenticatedJourneyHealthEntryRoute
+  '/_authenticated/journey/narrative-write': typeof AuthenticatedJourneyNarrativeWriteRoute
   '/_authenticated/journey/path': typeof AuthenticatedJourneyPathRoute
+  '/_authenticated/journey/people-entry': typeof AuthenticatedJourneyPeopleEntryRoute
+  '/_authenticated/journey/polarity-map': typeof AuthenticatedJourneyPolarityMapRoute
+  '/_authenticated/journey/practice-run': typeof AuthenticatedJourneyPracticeRunRoute
+  '/_authenticated/journey/practice-select': typeof AuthenticatedJourneyPracticeSelectRoute
   '/_authenticated/journey/reassess': typeof AuthenticatedJourneyReassessRoute
+  '/_authenticated/journey/rel-entry': typeof AuthenticatedJourneyRelEntryRoute
   '/_authenticated/journey/resistance': typeof AuthenticatedJourneyResistanceRoute
   '/_authenticated/journey/resistance-shape': typeof AuthenticatedJourneyResistanceShapeRoute
+  '/_authenticated/journey/rest-entry': typeof AuthenticatedJourneyRestEntryRoute
+  '/_authenticated/journey/self-letter': typeof AuthenticatedJourneySelfLetterRoute
+  '/_authenticated/journey/somatic-work': typeof AuthenticatedJourneySomaticWorkRoute
+  '/_authenticated/journey/sphere-task-career': typeof AuthenticatedJourneySphereTaskCareerRoute
+  '/_authenticated/journey/sphere-task-health': typeof AuthenticatedJourneySphereTaskHealthRoute
+  '/_authenticated/journey/sphere-task-relationships': typeof AuthenticatedJourneySphereTaskRelationshipsRoute
   '/_authenticated/journey/spheres': typeof AuthenticatedJourneySpheresRoute
   '/_authenticated/journey/success': typeof AuthenticatedJourneySuccessRoute
   '/_authenticated/journey/summary': typeof AuthenticatedJourneySummaryRoute
+  '/_authenticated/partners/psychologist': typeof AuthenticatedPartnersPsychologistRoute
+  '/_authenticated/practices_/$practiceId': typeof AuthenticatedPracticesPracticeIdRoute
   '/_authenticated/journey/': typeof AuthenticatedJourneyIndexRoute
+  '/_authenticated/practices_/run/$componentKey': typeof AuthenticatedPracticesRunComponentKeyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about-you'
+    | '/admin'
+    | '/auth-callback'
     | '/auth-invite'
     | '/disclaimer'
     | '/emergency'
@@ -322,29 +646,62 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/help'
     | '/home'
     | '/journey'
+    | '/opportunities'
     | '/practices'
     | '/profile'
+    | '/admin/funnel'
+    | '/admin/overview'
+    | '/admin/partners'
+    | '/admin/users'
+    | '/premium/paywall'
     | '/journey/assess'
+    | '/journey/breathing-work'
+    | '/journey/career-entry'
+    | '/journey/creative-express'
     | '/journey/current-state'
     | '/journey/emdr'
     | '/journey/emdr-intro'
+    | '/journey/fam-entry'
+    | '/journey/fear-reframe'
     | '/journey/fears'
     | '/journey/feeling'
+    | '/journey/finance-entry'
     | '/journey/goal'
+    | '/journey/gratitude-focus'
+    | '/journey/growth-entry'
+    | '/journey/health-entry'
+    | '/journey/narrative-write'
     | '/journey/path'
+    | '/journey/people-entry'
+    | '/journey/polarity-map'
+    | '/journey/practice-run'
+    | '/journey/practice-select'
     | '/journey/reassess'
+    | '/journey/rel-entry'
     | '/journey/resistance'
     | '/journey/resistance-shape'
+    | '/journey/rest-entry'
+    | '/journey/self-letter'
+    | '/journey/somatic-work'
+    | '/journey/sphere-task-career'
+    | '/journey/sphere-task-health'
+    | '/journey/sphere-task-relationships'
     | '/journey/spheres'
     | '/journey/success'
     | '/journey/summary'
+    | '/partners/psychologist'
+    | '/practices/$practiceId'
     | '/journey/'
+    | '/practices/run/$componentKey'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about-you'
+    | '/admin'
+    | '/auth-callback'
     | '/auth-invite'
     | '/disclaimer'
     | '/emergency'
@@ -354,29 +711,62 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/help'
     | '/home'
+    | '/opportunities'
     | '/practices'
     | '/profile'
+    | '/admin/funnel'
+    | '/admin/overview'
+    | '/admin/partners'
+    | '/admin/users'
+    | '/premium/paywall'
     | '/journey/assess'
+    | '/journey/breathing-work'
+    | '/journey/career-entry'
+    | '/journey/creative-express'
     | '/journey/current-state'
     | '/journey/emdr'
     | '/journey/emdr-intro'
+    | '/journey/fam-entry'
+    | '/journey/fear-reframe'
     | '/journey/fears'
     | '/journey/feeling'
+    | '/journey/finance-entry'
     | '/journey/goal'
+    | '/journey/gratitude-focus'
+    | '/journey/growth-entry'
+    | '/journey/health-entry'
+    | '/journey/narrative-write'
     | '/journey/path'
+    | '/journey/people-entry'
+    | '/journey/polarity-map'
+    | '/journey/practice-run'
+    | '/journey/practice-select'
     | '/journey/reassess'
+    | '/journey/rel-entry'
     | '/journey/resistance'
     | '/journey/resistance-shape'
+    | '/journey/rest-entry'
+    | '/journey/self-letter'
+    | '/journey/somatic-work'
+    | '/journey/sphere-task-career'
+    | '/journey/sphere-task-health'
+    | '/journey/sphere-task-relationships'
     | '/journey/spheres'
     | '/journey/success'
     | '/journey/summary'
+    | '/partners/psychologist'
+    | '/practices/$practiceId'
     | '/journey'
+    | '/practices/run/$componentKey'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/about-you'
+    | '/admin'
+    | '/auth-callback'
     | '/auth-invite'
     | '/disclaimer'
     | '/emergency'
@@ -386,31 +776,64 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/_authenticated/help'
     | '/_authenticated/home'
     | '/_authenticated/journey'
+    | '/_authenticated/opportunities'
     | '/_authenticated/practices'
     | '/_authenticated/profile'
+    | '/admin/funnel'
+    | '/admin/overview'
+    | '/admin/partners'
+    | '/admin/users'
+    | '/premium/paywall'
     | '/_authenticated/journey/assess'
+    | '/_authenticated/journey/breathing-work'
+    | '/_authenticated/journey/career-entry'
+    | '/_authenticated/journey/creative-express'
     | '/_authenticated/journey/current-state'
     | '/_authenticated/journey/emdr'
     | '/_authenticated/journey/emdr-intro'
+    | '/_authenticated/journey/fam-entry'
+    | '/_authenticated/journey/fear-reframe'
     | '/_authenticated/journey/fears'
     | '/_authenticated/journey/feeling'
+    | '/_authenticated/journey/finance-entry'
     | '/_authenticated/journey/goal'
+    | '/_authenticated/journey/gratitude-focus'
+    | '/_authenticated/journey/growth-entry'
+    | '/_authenticated/journey/health-entry'
+    | '/_authenticated/journey/narrative-write'
     | '/_authenticated/journey/path'
+    | '/_authenticated/journey/people-entry'
+    | '/_authenticated/journey/polarity-map'
+    | '/_authenticated/journey/practice-run'
+    | '/_authenticated/journey/practice-select'
     | '/_authenticated/journey/reassess'
+    | '/_authenticated/journey/rel-entry'
     | '/_authenticated/journey/resistance'
     | '/_authenticated/journey/resistance-shape'
+    | '/_authenticated/journey/rest-entry'
+    | '/_authenticated/journey/self-letter'
+    | '/_authenticated/journey/somatic-work'
+    | '/_authenticated/journey/sphere-task-career'
+    | '/_authenticated/journey/sphere-task-health'
+    | '/_authenticated/journey/sphere-task-relationships'
     | '/_authenticated/journey/spheres'
     | '/_authenticated/journey/success'
     | '/_authenticated/journey/summary'
+    | '/_authenticated/partners/psychologist'
+    | '/_authenticated/practices_/$practiceId'
     | '/_authenticated/journey/'
+    | '/_authenticated/practices_/run/$componentKey'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutYouRoute: typeof AboutYouRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AuthCallbackRoute: typeof AuthCallbackRoute
   AuthInviteRoute: typeof AuthInviteRoute
   DisclaimerRoute: typeof DisclaimerRoute
   EmergencyRoute: typeof EmergencyRoute
@@ -420,6 +843,7 @@ export interface RootRouteChildren {
   RewardsIntroRoute: typeof RewardsIntroRoute
   ToSpheresRoute: typeof ToSpheresRoute
   WelcomeRoute: typeof WelcomeRoute
+  PremiumPaywallRoute: typeof PremiumPaywallRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -487,6 +911,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthInviteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth-callback': {
+      id: '/auth-callback'
+      path: '/auth-callback'
+      fullPath: '/auth-callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about-you': {
       id: '/about-you'
       path: '/about-you'
@@ -508,6 +946,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/premium/paywall': {
+      id: '/premium/paywall'
+      path: '/premium/paywall'
+      fullPath: '/premium/paywall'
+      preLoaderRoute: typeof PremiumPaywallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/partners': {
+      id: '/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AdminPartnersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/overview': {
+      id: '/admin/overview'
+      path: '/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AdminOverviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/funnel': {
+      id: '/admin/funnel'
+      path: '/funnel'
+      fullPath: '/admin/funnel'
+      preLoaderRoute: typeof AdminFunnelRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -520,6 +993,13 @@ declare module '@tanstack/react-router' {
       path: '/practices'
       fullPath: '/practices'
       preLoaderRoute: typeof AuthenticatedPracticesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/opportunities': {
+      id: '/_authenticated/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof AuthenticatedOpportunitiesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/journey': {
@@ -536,12 +1016,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/help': {
+      id: '/_authenticated/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof AuthenticatedHelpRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/journey/': {
       id: '/_authenticated/journey/'
       path: '/'
       fullPath: '/journey/'
       preLoaderRoute: typeof AuthenticatedJourneyIndexRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/practices_/$practiceId': {
+      id: '/_authenticated/practices_/$practiceId'
+      path: '/practices/$practiceId'
+      fullPath: '/practices/$practiceId'
+      preLoaderRoute: typeof AuthenticatedPracticesPracticeIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/partners/psychologist': {
+      id: '/_authenticated/partners/psychologist'
+      path: '/partners/psychologist'
+      fullPath: '/partners/psychologist'
+      preLoaderRoute: typeof AuthenticatedPartnersPsychologistRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/journey/summary': {
       id: '/_authenticated/journey/summary'
@@ -564,6 +1065,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneySpheresRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/journey/sphere-task-relationships': {
+      id: '/_authenticated/journey/sphere-task-relationships'
+      path: '/sphere-task-relationships'
+      fullPath: '/journey/sphere-task-relationships'
+      preLoaderRoute: typeof AuthenticatedJourneySphereTaskRelationshipsRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/sphere-task-health': {
+      id: '/_authenticated/journey/sphere-task-health'
+      path: '/sphere-task-health'
+      fullPath: '/journey/sphere-task-health'
+      preLoaderRoute: typeof AuthenticatedJourneySphereTaskHealthRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/sphere-task-career': {
+      id: '/_authenticated/journey/sphere-task-career'
+      path: '/sphere-task-career'
+      fullPath: '/journey/sphere-task-career'
+      preLoaderRoute: typeof AuthenticatedJourneySphereTaskCareerRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/somatic-work': {
+      id: '/_authenticated/journey/somatic-work'
+      path: '/somatic-work'
+      fullPath: '/journey/somatic-work'
+      preLoaderRoute: typeof AuthenticatedJourneySomaticWorkRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/self-letter': {
+      id: '/_authenticated/journey/self-letter'
+      path: '/self-letter'
+      fullPath: '/journey/self-letter'
+      preLoaderRoute: typeof AuthenticatedJourneySelfLetterRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/rest-entry': {
+      id: '/_authenticated/journey/rest-entry'
+      path: '/rest-entry'
+      fullPath: '/journey/rest-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyRestEntryRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
     '/_authenticated/journey/resistance-shape': {
       id: '/_authenticated/journey/resistance-shape'
       path: '/resistance-shape'
@@ -578,11 +1121,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneyResistanceRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/journey/rel-entry': {
+      id: '/_authenticated/journey/rel-entry'
+      path: '/rel-entry'
+      fullPath: '/journey/rel-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyRelEntryRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
     '/_authenticated/journey/reassess': {
       id: '/_authenticated/journey/reassess'
       path: '/reassess'
       fullPath: '/journey/reassess'
       preLoaderRoute: typeof AuthenticatedJourneyReassessRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/practice-select': {
+      id: '/_authenticated/journey/practice-select'
+      path: '/practice-select'
+      fullPath: '/journey/practice-select'
+      preLoaderRoute: typeof AuthenticatedJourneyPracticeSelectRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/practice-run': {
+      id: '/_authenticated/journey/practice-run'
+      path: '/practice-run'
+      fullPath: '/journey/practice-run'
+      preLoaderRoute: typeof AuthenticatedJourneyPracticeRunRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/polarity-map': {
+      id: '/_authenticated/journey/polarity-map'
+      path: '/polarity-map'
+      fullPath: '/journey/polarity-map'
+      preLoaderRoute: typeof AuthenticatedJourneyPolarityMapRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/people-entry': {
+      id: '/_authenticated/journey/people-entry'
+      path: '/people-entry'
+      fullPath: '/journey/people-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyPeopleEntryRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
     '/_authenticated/journey/path': {
@@ -592,11 +1170,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneyPathRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/journey/narrative-write': {
+      id: '/_authenticated/journey/narrative-write'
+      path: '/narrative-write'
+      fullPath: '/journey/narrative-write'
+      preLoaderRoute: typeof AuthenticatedJourneyNarrativeWriteRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/health-entry': {
+      id: '/_authenticated/journey/health-entry'
+      path: '/health-entry'
+      fullPath: '/journey/health-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyHealthEntryRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/growth-entry': {
+      id: '/_authenticated/journey/growth-entry'
+      path: '/growth-entry'
+      fullPath: '/journey/growth-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyGrowthEntryRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/gratitude-focus': {
+      id: '/_authenticated/journey/gratitude-focus'
+      path: '/gratitude-focus'
+      fullPath: '/journey/gratitude-focus'
+      preLoaderRoute: typeof AuthenticatedJourneyGratitudeFocusRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
     '/_authenticated/journey/goal': {
       id: '/_authenticated/journey/goal'
       path: '/goal'
       fullPath: '/journey/goal'
       preLoaderRoute: typeof AuthenticatedJourneyGoalRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/finance-entry': {
+      id: '/_authenticated/journey/finance-entry'
+      path: '/finance-entry'
+      fullPath: '/journey/finance-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyFinanceEntryRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
     '/_authenticated/journey/feeling': {
@@ -611,6 +1224,20 @@ declare module '@tanstack/react-router' {
       path: '/fears'
       fullPath: '/journey/fears'
       preLoaderRoute: typeof AuthenticatedJourneyFearsRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/fear-reframe': {
+      id: '/_authenticated/journey/fear-reframe'
+      path: '/fear-reframe'
+      fullPath: '/journey/fear-reframe'
+      preLoaderRoute: typeof AuthenticatedJourneyFearReframeRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/fam-entry': {
+      id: '/_authenticated/journey/fam-entry'
+      path: '/fam-entry'
+      fullPath: '/journey/fam-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyFamEntryRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
     '/_authenticated/journey/emdr-intro': {
@@ -634,6 +1261,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneyCurrentStateRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/journey/creative-express': {
+      id: '/_authenticated/journey/creative-express'
+      path: '/creative-express'
+      fullPath: '/journey/creative-express'
+      preLoaderRoute: typeof AuthenticatedJourneyCreativeExpressRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/career-entry': {
+      id: '/_authenticated/journey/career-entry'
+      path: '/career-entry'
+      fullPath: '/journey/career-entry'
+      preLoaderRoute: typeof AuthenticatedJourneyCareerEntryRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
+    '/_authenticated/journey/breathing-work': {
+      id: '/_authenticated/journey/breathing-work'
+      path: '/breathing-work'
+      fullPath: '/journey/breathing-work'
+      preLoaderRoute: typeof AuthenticatedJourneyBreathingWorkRouteImport
+      parentRoute: typeof AuthenticatedJourneyRoute
+    }
     '/_authenticated/journey/assess': {
       id: '/_authenticated/journey/assess'
       path: '/assess'
@@ -641,21 +1289,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJourneyAssessRouteImport
       parentRoute: typeof AuthenticatedJourneyRoute
     }
+    '/_authenticated/practices_/run/$componentKey': {
+      id: '/_authenticated/practices_/run/$componentKey'
+      path: '/practices/run/$componentKey'
+      fullPath: '/practices/run/$componentKey'
+      preLoaderRoute: typeof AuthenticatedPracticesRunComponentKeyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedJourneyRouteChildren {
   AuthenticatedJourneyAssessRoute: typeof AuthenticatedJourneyAssessRoute
+  AuthenticatedJourneyBreathingWorkRoute: typeof AuthenticatedJourneyBreathingWorkRoute
+  AuthenticatedJourneyCareerEntryRoute: typeof AuthenticatedJourneyCareerEntryRoute
+  AuthenticatedJourneyCreativeExpressRoute: typeof AuthenticatedJourneyCreativeExpressRoute
   AuthenticatedJourneyCurrentStateRoute: typeof AuthenticatedJourneyCurrentStateRoute
   AuthenticatedJourneyEmdrRoute: typeof AuthenticatedJourneyEmdrRoute
   AuthenticatedJourneyEmdrIntroRoute: typeof AuthenticatedJourneyEmdrIntroRoute
+  AuthenticatedJourneyFamEntryRoute: typeof AuthenticatedJourneyFamEntryRoute
+  AuthenticatedJourneyFearReframeRoute: typeof AuthenticatedJourneyFearReframeRoute
   AuthenticatedJourneyFearsRoute: typeof AuthenticatedJourneyFearsRoute
   AuthenticatedJourneyFeelingRoute: typeof AuthenticatedJourneyFeelingRoute
+  AuthenticatedJourneyFinanceEntryRoute: typeof AuthenticatedJourneyFinanceEntryRoute
   AuthenticatedJourneyGoalRoute: typeof AuthenticatedJourneyGoalRoute
+  AuthenticatedJourneyGratitudeFocusRoute: typeof AuthenticatedJourneyGratitudeFocusRoute
+  AuthenticatedJourneyGrowthEntryRoute: typeof AuthenticatedJourneyGrowthEntryRoute
+  AuthenticatedJourneyHealthEntryRoute: typeof AuthenticatedJourneyHealthEntryRoute
+  AuthenticatedJourneyNarrativeWriteRoute: typeof AuthenticatedJourneyNarrativeWriteRoute
   AuthenticatedJourneyPathRoute: typeof AuthenticatedJourneyPathRoute
+  AuthenticatedJourneyPeopleEntryRoute: typeof AuthenticatedJourneyPeopleEntryRoute
+  AuthenticatedJourneyPolarityMapRoute: typeof AuthenticatedJourneyPolarityMapRoute
+  AuthenticatedJourneyPracticeRunRoute: typeof AuthenticatedJourneyPracticeRunRoute
+  AuthenticatedJourneyPracticeSelectRoute: typeof AuthenticatedJourneyPracticeSelectRoute
   AuthenticatedJourneyReassessRoute: typeof AuthenticatedJourneyReassessRoute
+  AuthenticatedJourneyRelEntryRoute: typeof AuthenticatedJourneyRelEntryRoute
   AuthenticatedJourneyResistanceRoute: typeof AuthenticatedJourneyResistanceRoute
   AuthenticatedJourneyResistanceShapeRoute: typeof AuthenticatedJourneyResistanceShapeRoute
+  AuthenticatedJourneyRestEntryRoute: typeof AuthenticatedJourneyRestEntryRoute
+  AuthenticatedJourneySelfLetterRoute: typeof AuthenticatedJourneySelfLetterRoute
+  AuthenticatedJourneySomaticWorkRoute: typeof AuthenticatedJourneySomaticWorkRoute
+  AuthenticatedJourneySphereTaskCareerRoute: typeof AuthenticatedJourneySphereTaskCareerRoute
+  AuthenticatedJourneySphereTaskHealthRoute: typeof AuthenticatedJourneySphereTaskHealthRoute
+  AuthenticatedJourneySphereTaskRelationshipsRoute: typeof AuthenticatedJourneySphereTaskRelationshipsRoute
   AuthenticatedJourneySpheresRoute: typeof AuthenticatedJourneySpheresRoute
   AuthenticatedJourneySuccessRoute: typeof AuthenticatedJourneySuccessRoute
   AuthenticatedJourneySummaryRoute: typeof AuthenticatedJourneySummaryRoute
@@ -664,17 +1340,46 @@ interface AuthenticatedJourneyRouteChildren {
 
 const AuthenticatedJourneyRouteChildren: AuthenticatedJourneyRouteChildren = {
   AuthenticatedJourneyAssessRoute: AuthenticatedJourneyAssessRoute,
+  AuthenticatedJourneyBreathingWorkRoute:
+    AuthenticatedJourneyBreathingWorkRoute,
+  AuthenticatedJourneyCareerEntryRoute: AuthenticatedJourneyCareerEntryRoute,
+  AuthenticatedJourneyCreativeExpressRoute:
+    AuthenticatedJourneyCreativeExpressRoute,
   AuthenticatedJourneyCurrentStateRoute: AuthenticatedJourneyCurrentStateRoute,
   AuthenticatedJourneyEmdrRoute: AuthenticatedJourneyEmdrRoute,
   AuthenticatedJourneyEmdrIntroRoute: AuthenticatedJourneyEmdrIntroRoute,
+  AuthenticatedJourneyFamEntryRoute: AuthenticatedJourneyFamEntryRoute,
+  AuthenticatedJourneyFearReframeRoute: AuthenticatedJourneyFearReframeRoute,
   AuthenticatedJourneyFearsRoute: AuthenticatedJourneyFearsRoute,
   AuthenticatedJourneyFeelingRoute: AuthenticatedJourneyFeelingRoute,
+  AuthenticatedJourneyFinanceEntryRoute: AuthenticatedJourneyFinanceEntryRoute,
   AuthenticatedJourneyGoalRoute: AuthenticatedJourneyGoalRoute,
+  AuthenticatedJourneyGratitudeFocusRoute:
+    AuthenticatedJourneyGratitudeFocusRoute,
+  AuthenticatedJourneyGrowthEntryRoute: AuthenticatedJourneyGrowthEntryRoute,
+  AuthenticatedJourneyHealthEntryRoute: AuthenticatedJourneyHealthEntryRoute,
+  AuthenticatedJourneyNarrativeWriteRoute:
+    AuthenticatedJourneyNarrativeWriteRoute,
   AuthenticatedJourneyPathRoute: AuthenticatedJourneyPathRoute,
+  AuthenticatedJourneyPeopleEntryRoute: AuthenticatedJourneyPeopleEntryRoute,
+  AuthenticatedJourneyPolarityMapRoute: AuthenticatedJourneyPolarityMapRoute,
+  AuthenticatedJourneyPracticeRunRoute: AuthenticatedJourneyPracticeRunRoute,
+  AuthenticatedJourneyPracticeSelectRoute:
+    AuthenticatedJourneyPracticeSelectRoute,
   AuthenticatedJourneyReassessRoute: AuthenticatedJourneyReassessRoute,
+  AuthenticatedJourneyRelEntryRoute: AuthenticatedJourneyRelEntryRoute,
   AuthenticatedJourneyResistanceRoute: AuthenticatedJourneyResistanceRoute,
   AuthenticatedJourneyResistanceShapeRoute:
     AuthenticatedJourneyResistanceShapeRoute,
+  AuthenticatedJourneyRestEntryRoute: AuthenticatedJourneyRestEntryRoute,
+  AuthenticatedJourneySelfLetterRoute: AuthenticatedJourneySelfLetterRoute,
+  AuthenticatedJourneySomaticWorkRoute: AuthenticatedJourneySomaticWorkRoute,
+  AuthenticatedJourneySphereTaskCareerRoute:
+    AuthenticatedJourneySphereTaskCareerRoute,
+  AuthenticatedJourneySphereTaskHealthRoute:
+    AuthenticatedJourneySphereTaskHealthRoute,
+  AuthenticatedJourneySphereTaskRelationshipsRoute:
+    AuthenticatedJourneySphereTaskRelationshipsRoute,
   AuthenticatedJourneySpheresRoute: AuthenticatedJourneySpheresRoute,
   AuthenticatedJourneySuccessRoute: AuthenticatedJourneySuccessRoute,
   AuthenticatedJourneySummaryRoute: AuthenticatedJourneySummaryRoute,
@@ -685,27 +1390,57 @@ const AuthenticatedJourneyRouteWithChildren =
   AuthenticatedJourneyRoute._addFileChildren(AuthenticatedJourneyRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRouteWithChildren
+  AuthenticatedOpportunitiesRoute: typeof AuthenticatedOpportunitiesRoute
   AuthenticatedPracticesRoute: typeof AuthenticatedPracticesRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedPartnersPsychologistRoute: typeof AuthenticatedPartnersPsychologistRoute
+  AuthenticatedPracticesPracticeIdRoute: typeof AuthenticatedPracticesPracticeIdRoute
+  AuthenticatedPracticesRunComponentKeyRoute: typeof AuthenticatedPracticesRunComponentKeyRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRouteWithChildren,
+  AuthenticatedOpportunitiesRoute: AuthenticatedOpportunitiesRoute,
   AuthenticatedPracticesRoute: AuthenticatedPracticesRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedPartnersPsychologistRoute:
+    AuthenticatedPartnersPsychologistRoute,
+  AuthenticatedPracticesPracticeIdRoute: AuthenticatedPracticesPracticeIdRoute,
+  AuthenticatedPracticesRunComponentKeyRoute:
+    AuthenticatedPracticesRunComponentKeyRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface AdminRouteChildren {
+  AdminFunnelRoute: typeof AdminFunnelRoute
+  AdminOverviewRoute: typeof AdminOverviewRoute
+  AdminPartnersRoute: typeof AdminPartnersRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminFunnelRoute: AdminFunnelRoute,
+  AdminOverviewRoute: AdminOverviewRoute,
+  AdminPartnersRoute: AdminPartnersRoute,
+  AdminUsersRoute: AdminUsersRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutYouRoute: AboutYouRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AuthCallbackRoute: AuthCallbackRoute,
   AuthInviteRoute: AuthInviteRoute,
   DisclaimerRoute: DisclaimerRoute,
   EmergencyRoute: EmergencyRoute,
@@ -715,6 +1450,7 @@ const rootRouteChildren: RootRouteChildren = {
   RewardsIntroRoute: RewardsIntroRoute,
   ToSpheresRoute: ToSpheresRoute,
   WelcomeRoute: WelcomeRoute,
+  PremiumPaywallRoute: PremiumPaywallRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
