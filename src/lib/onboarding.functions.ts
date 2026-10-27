@@ -42,6 +42,12 @@ export const upsertOnboarding = createServerFn({ method: "POST" })
       console.error("[onboarding] upsert error:", error.message);
       throw new Error(GENERIC_ERROR);
     }
+    if (data.user_name) {
+      await supabase
+        .from("profiles")
+        .update({ display_name: data.user_name })
+        .eq("id", userId);
+    }
     return { ok: true };
   });
 

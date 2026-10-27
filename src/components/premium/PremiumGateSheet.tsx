@@ -1,5 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
+import { getAppConfig } from "@/lib/app-config";
 
 type Feature = "journey_limit" | "practice" | "diary" | "guardian" | "world";
 
@@ -15,7 +18,7 @@ const FEATURE_CONTENT: Record<Feature, { title: string; description: string; per
   },
   practice: {
     title: "Все практики доступны",
-    description: "Релаксация и Гармонизация — только для Premium.",
+    description: "Релаксация и Гармонизация — только в EVA+.",
     perks: [
       "Все три типа практик без ограничений",
       "Неограниченные путешествия",
@@ -60,6 +63,12 @@ interface PremiumGateSheetProps {
 export function PremiumGateSheet({ open, feature, onClose }: PremiumGateSheetProps) {
   const navigate = useNavigate();
   const content = FEATURE_CONTENT[feature];
+  const fetchAppConfig = useServerFn(getAppConfig);
+  const [isPremiumApp, setIsPremiumApp] = useState(false);
+
+  useEffect(() => {
+    fetchAppConfig().then((cfg) => setIsPremiumApp(cfg.isPremiumApp)).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTry = () => {
     onClose();
@@ -104,13 +113,15 @@ export function PremiumGateSheet({ open, feature, onClose }: PremiumGateSheetPro
               ))}
             </ul>
 
-            <button
-              type="button"
-              onClick={handleTry}
-              className="w-full rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-amber-400/30 transition hover:from-amber-500 hover:to-amber-600"
-            >
-              Попробовать Premium
-            </button>
+            {isPremiumApp && (
+              <button
+                type="button"
+                onClick={handleTry}
+                className="w-full rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-amber-400/30 transition hover:from-amber-500 hover:to-amber-600"
+              >
+                Оформить EVA+
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

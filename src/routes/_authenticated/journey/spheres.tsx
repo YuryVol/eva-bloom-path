@@ -6,9 +6,11 @@ import { useJourneyStore } from "@/lib/journey-store";
 import { useAddress } from "@/lib/use-address";
 import { updateJourney } from "@/lib/journey.functions";
 import { SPHERES, type SphereId } from "@/lib/journey-types";
-import { checkJourneyLimit, recordJourneyStart } from "@/lib/premium.functions";
+import { checkJourneyLimit, recordJourneyStart, checkDailyCycleLimit } from "@/lib/premium.functions";
 import { PremiumGateSheet } from "@/components/premium/PremiumGateSheet";
 import { PremiumBadge } from "@/components/premium/PremiumBadge";
+import { useAppConfig } from "@/lib/app-config-context";
+import { PremiumCTA } from "@/components/premium/PremiumCTA";
 
 export const Route = createFileRoute("/_authenticated/journey/spheres")({
   component: SpheresScreen,
@@ -58,21 +60,30 @@ function SpheresScreen() {
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
   const fetchLimits = useServerFn(checkJourneyLimit);
+  const fetchCycleLimit = useServerFn(checkDailyCycleLimit);
   const doRecordStart = useServerFn(recordJourneyStart);
   const selected = state.selected_spheres;
   const maxed = selected.length >= 3;
 
+  const { isPremiumApp } = useAppConfig();
   // Premium limits
   const [limitMap, setLimitMap] = useState<Record<string, boolean>>({});
   const [isPremium, setIsPremium] = useState(true); // optimistic — show gate only when loaded
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [limitedSphere, setLimitedSphere] = useState<string | null>(null);
+  const [dailyCycleLimited, setDailyCycleLimited] = useState(false);
 
   useEffect(() => {
-    fetchLimits()
-      .then(({ isPremium: p, limitMap: lm }) => { setIsPremium(p); setLimitMap(lm); })
-      .catch(() => {});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!isPremiumApp) {
+      setIsPremium(true);
+      setLimitMap({});
+      return;
+    }
+    Promise.all([
+      fetchLimits().then(({ isPremium: p, limitMap: lm }) => { setIsPremium(p); setLimitMap(lm); }),
+      fetchCycleLimit().then(({ limited }) => { if (limited) setDailyCycleLimited(true); }),
+    ]).catch(() => {});
+  }, [isPremiumApp]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Countdown to midnight
   const [countdown, setCountdown] = useState("");
@@ -216,7 +227,7 @@ function SpheresScreen() {
         }}
       >
         <div
-          className="relative flex h-full w-full flex-col overflow-y-auto"
+          className="relative flex h-full w-full flex-col overflow-hidden"
           style={{ background: "#F5EDDF" }}
         >
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: "#F5EDDF" }} />
@@ -240,7 +251,7 @@ function SpheresScreen() {
           </div>
 
           {/* Header */}
-          <div className="relative z-10 shrink-0 px-4 pt-2 pb-1 text-center">
+          <div className="relative z-10 shrink-0 px-4 pt-1 text-center">
             <h1
               className="text-2xl md:text-3xl"
               style={{
@@ -264,13 +275,55 @@ function SpheresScreen() {
             </p>
           </div>
 
+          {/* Daily cycle limit overlay */}
+          {dailyCycleLimited && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#F5EDDF]/90 backdrop-blur-sm px-6">
+              <div className="w-full max-w-xs rounded-3xl border border-amber-200/60 bg-white/80 p-6 text-center shadow-xl">
+                <p className="text-4xl">🌙</p>
+                <h2
+                  className="mt-3 text-xl"
+                  style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', color: "#5F4B3E", fontWeight: 500 }}
+                >
+                  На сегодня всё
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: "#7A6553" }}>
+                  {a.vy
+                    ? "Вы прошли путь из трёх сфер. Возвращайтесь завтра — Ева будет ждать."
+                    : "Ты прошла путь из трёх сфер. Возвращайся завтра — Ева будет ждать."}
+                </p>
+                <p className="mt-1 text-xs" style={{ color: "#A08060" }}>
+                  До сброса: {countdown}
+                </p>
+                <div className="mt-5 space-y-2">
+                  {isPremiumApp && (
+                    <button
+                      type="button"
+                      onClick={() => navigate({ to: "/premium/paywall" as never })}
+                      className="w-full rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 py-3 text-sm font-semibold text-white shadow-md shadow-amber-400/30 transition hover:from-amber-500 hover:to-amber-600"
+                    >
+                      ✨ Подключить EVA+
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => navigate({ to: "/home" as never })}
+                    className="w-full rounded-2xl border border-[#D9C9B0] bg-transparent py-2.5 text-sm text-[#7A6553] transition hover:bg-[#F5EDDF]"
+                  >
+                    Вернуться завтра
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Spheres stage */}
           <div
-            className="spheres-stage relative shrink-0"
+            className="spheres-stage relative"
             style={{
               width: "min(1200px, 96vw)",
-              height: "clamp(580px, 78vh, 960px)",
-              margin: "32px auto 24px",
+              flex: 1,
+              minHeight: 0,
+              margin: "4px auto",
               overflow: "visible",
             }}
           >
@@ -470,6 +523,13 @@ function SpheresScreen() {
         feature="journey_limit"
         onClose={() => setShowPremiumGate(false)}
       />
+
+      {/* CTA под заблокированными сферами */}
+      {!isPremium && Object.values(limitMap).some(Boolean) && (
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+          <PremiumCTA format="a" context="spheres" />
+        </div>
+      )}
     </div>
   );
 }

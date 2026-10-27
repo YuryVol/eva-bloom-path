@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЕВА — Карта приложения v2</title>
+<style>
+  :root { --bg: #FDFAF5; --card: #fff; --border: #e8e0d4; --text: #2c2a27; --muted: #8a8580; --primary: #c4944a; --accent: #e8b84a; --green: #22c55e; --red: #ef4444; --blue: #3b82f6; --purple: #8b5cf6; --pink: #ec4899; --orange: #f97316; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.4rem; font-weight: 600; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); }
+  h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+  .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+  .card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .badge { display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge-green { background: #dcfce7; color: #166534; } .badge-red { background: #fef2f2; color: #991b1b; }
+  .badge-blue { background: #dbeafe; color: #1e40af; } .badge-purple { background: #f3e8ff; color: #6b21a8; }
+  .badge-orange { background: #fff7ed; color: #9a3412; } .badge-yellow { background: #fef9c3; color: #854d0e; }
+  .badge-gray { background: #f3f4f6; color: #374151; }
+  .route-list { list-style: none; font-size: 0.85rem; }
+  .route-list li { padding: 4px 0; border-bottom: 1px solid #f3efe8; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .route-list li:last-child { border: none; }
+  .path { font-family: 'Cascadia Code', 'Fira Code', monospace; color: var(--primary); font-size: 0.8rem; }
+  .flow { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+  .flow-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; font-size: 0.8rem; }
+  .flow-step { background: #f8f4ee; border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; white-space: nowrap; }
+  .flow-step.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .flow-step.premium { background: #fef3c7; border-color: #fbbf24; }
+  .flow-step.video { background: #ede9fe; border-color: #a78bfa; }
+  .flow-step.gate { background: #fee2e2; border-color: #fca5a5; }
+  .flow-arrow { color: var(--muted); font-size: 0.7rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1rem 0; }
+  th { background: #f8f4ee; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-weight: 600; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:hover td { background: #fdfaf5; }
+  .status-done { color: var(--green); font-weight: 600; } .status-partial { color: var(--orange); font-weight: 600; }
+  .status-missing { color: var(--red); font-weight: 600; } .status-extra { color: var(--blue); font-weight: 600; }
+  .tree { font-family: monospace; font-size: 0.82rem; line-height: 1.8; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; overflow-x: auto; white-space: pre; }
+  .t-folder { color: var(--primary); font-weight: 600; } .t-auth { color: var(--purple); }
+  .t-pub { color: var(--muted); } .t-admin { color: var(--red); }
+  .t-journey { color: var(--green); } .t-premium { color: var(--orange); }
+  .section-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
+  .section-nav a { font-size: 0.8rem; padding: 6px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); color: var(--text); text-decoration: none; }
+  .section-nav a:hover { border-color: var(--primary); background: #fef9f0; }
+  .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.5rem; text-align: center; min-width: 120px; }
+  .stat-num { font-size: 2rem; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .cond { background: #fffbeb; border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 0.5rem 0; border-radius: 0 8px 8px 0; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>ЕВА — Полная карта приложения</h1>
+<p class="subtitle">Сгенерировано по исходному коду проекта · Июнь 2026</p>
+
+<div class="stat-row">
+  <div class="stat"><div class="stat-num">68</div><div class="stat-label">Маршрутов</div></div>
+  <div class="stat"><div class="stat-num">10</div><div class="stat-label">Вариантов путешествий</div></div>
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Сфер жизни</div></div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">Видео-интерлюдий</div></div>
+  <div class="stat"><div class="stat-num">104</div><div class="stat-label">Микро-действия</div></div>
+  <div class="stat"><div class="stat-num">4</div><div class="stat-label">Состояния мира</div></div>
+</div>
+
+<nav class="section-nav">
+  <a href="#sitemap">Sitemap</a>
+  <a href="#modules">Модули</a>
+  <a href="#flows">User Flows</a>
+  <a href="#variants">Варианты путешествий</a>
+  <a href="#spheres">Сферы</a>
+  <a href="#states">Состояния</a>
+  <a href="#premium">Premium</a>
+  <a href="#charter-in">Устав: In-Scope</a>
+  <a href="#charter-out">Устав: Out-of-Scope</a>
+  <a href="#charter-extra">Сверх устава</a>
+  <a href="#missing">Отсутствующее</a>
+</nav>
+
+<h2 id="sitemap">1. Дерево маршрутов (Sitemap)</h2>
+<div class="tree"><span class="t-folder">/</span> <span class="t-pub">(index — редирект по состоянию сессии)</span>
+├── <span class="t-pub">/intro</span> — Лендинг, первый экран
+├── <span class="t-pub">/login</span> — Email + Google OAuth
+├── <span class="t-pub">/reset-password</span> — Сброс пароля
+├── <span class="t-pub">/auth-callback</span> — OAuth callback
+├── <span class="t-pub">/auth-invite</span> — Реферальная регистрация
+├── <span class="t-pub">/about-you</span> — Онбординг: имя, роли, сферы
+├── <span class="t-pub">/disclaimer</span> — Дисклеймер (не терапия)
+├── <span class="t-pub">/emergency</span> — Кризисные контакты
+├── <span class="t-pub">/welcome</span> — Приветствие + видео-переход
+├── <span class="t-pub">/to-spheres</span> — Видео-переход к сферам
+├── <span class="t-pub">/rewards-intro</span> — Ознакомление с наградами
+│
+├── <span class="t-premium">/premium</span>
+│   ├── <span class="t-premium">/paywall</span> — Экран оплаты Premium
+│   └── <span class="t-premium">/guardian-creator</span> — Создание хранителя сферы
+│
+├── <span class="t-admin">/admin</span> <span class="badge badge-red">ADMIN</span>
+│   ├── <span class="t-admin">/overview</span> — DAU, MAU, retention, heatmap
+│   ├── <span class="t-admin">/funnel</span> — Воронка онбординга + путешествий
+│   ├── <span class="t-admin">/cta</span> — CTA-трекинг Premium
+│   ├── <span class="t-admin">/users</span> — Профили пользователей
+│   └── <span class="t-admin">/partners</span> — Партнёрская аналитика
+│
+└── <span class="t-auth">/_authenticated</span> <span class="badge badge-purple">AUTH REQUIRED</span>
+    ├── <span class="t-auth">/home</span> — Главный экран (мир Евы, чекин, прогресс)
+    ├── <span class="t-auth">/profile</span> — Прогресс, бейджи, вехи, магазин, хранители
+    ├── <span class="t-auth">/diary</span> — Дневник Евы (календарь) <span class="badge badge-orange">PREMIUM</span>
+    ├── <span class="t-auth">/practices</span> — Каталог практик
+    │   ├── <span class="t-auth">/$practiceId</span> — Описание практики
+    │   └── <span class="t-auth">/run/$componentKey</span> — Запуск практики
+    ├── <span class="t-auth">/help</span> — Помощь и FAQ
+    ├── <span class="t-auth">/opportunities</span> — Возможности
+    ├── <span class="t-auth">/partners/psychologist</span> — Партнёр-психолог
+    │
+    └── <span class="t-journey">/journey</span> <span class="badge badge-green">33 экрана</span>
+        ├── /spheres — Колесо 8 сфер
+        ├── /assess — Оценка сферы
+        ├── /goal — Выбор цели
+        ├── /feeling, /current-state — Чувства, состояние
+        ├── /fears, /fear-reframe — Страхи
+        ├── /resistance, /resistance-shape — Сопротивление
+        ├── /path — Выбор пути
+        ├── /emdr-intro, /emdr — EMDR-практика
+        ├── /breathing-work, /somatic-work — Телесные практики
+        ├── /narrative-write, /self-letter — Письменные практики
+        ├── /gratitude-focus, /creative-express — Ресурсные практики
+        ├── /polarity-map — Карта полярностей
+        ├── /practice-select, /practice-run — Выбор + запуск практики
+        ├── /reassess — Повторная оценка
+        ├── /success — Первый шаг / обет
+        ├── /summary — Итоги путешествия
+        ├── /rel-entry … /people-entry — 8 entry-экранов (по сферам)
+        └── /sphere-task-* — 3 sphere-task экрана</div>
+
+<h2 id="modules">2. Модули приложения</h2>
+<div class="grid">
+<div class="card"><h4>🔐 Аутентификация</h4><ul class="route-list">
+  <li><span class="path">/login</span> <span class="badge badge-gray">email + google</span></li>
+  <li><span class="path">/auth-callback</span> <span class="badge badge-gray">OAuth redirect</span></li>
+  <li><span class="path">/auth-invite</span> <span class="badge badge-gray">реферал</span></li>
+  <li><span class="path">/reset-password</span> <span class="badge badge-gray">восстановление</span></li>
+</ul></div>
+<div class="card"><h4>🎓 Онбординг</h4><ul class="route-list">
+  <li><span class="path">/intro</span> лендинг</li>
+  <li><span class="path">/about-you</span> имя, роли, сферы</li>
+  <li><span class="path">/disclaimer</span> дисклеймер</li>
+  <li><span class="path">/welcome</span> приветствие + видео</li>
+  <li><span class="path">/rewards-intro</span> гейм-механики</li>
+</ul></div>
+<div class="card"><h4>🏠 Главный экран</h4><ul class="route-list">
+  <li><span class="path">/home</span> мир Евы, чекин, прогресс</li>
+  <li>Модальное: WorldStateChangedModal</li>
+  <li>Виджет: чекин настроения (слайдер)</li>
+  <li>Виджет: первый шаг дня</li>
+  <li>Виджет: XP / монеты / уровень</li>
+</ul></div>
+<div class="card"><h4>🗺️ Путешествие (33 экрана)</h4><ul class="route-list">
+  <li>10 вариантов путешествий (5–11 шагов)</li>
+  <li>8 sphere-entry экранов</li>
+  <li>3 sphere-task экрана</li>
+  <li>7 variant-specific экранов</li>
+  <li>6 видео-интерлюдий между шагами</li>
+</ul></div>
+<div class="card"><h4>🧘 Практики</h4><ul class="route-list">
+  <li><span class="path">/practices</span> каталог (аккордеон)</li>
+  <li><span class="path">/practices/$id</span> описание</li>
+  <li><span class="path">/practices/run/$key</span> запуск</li>
+  <li>Типы: stabilization, relaxation, harmonization</li>
+  <li>Гейтинг: free = только stabilization</li>
+</ul></div>
+<div class="card"><h4>👤 Профиль</h4><ul class="route-list">
+  <li>Уровень, XP, стрик, монеты</li>
+  <li>9 бейджей (sharable PNG)</li>
+  <li>Вехи прогресса (milestones)</li>
+  <li>История путешествий</li>
+  <li>Хранители сфер <span class="badge badge-orange">PREMIUM</span></li>
+  <li>Premium badge в хедере</li>
+</ul></div>
+<div class="card"><h4>📖 Дневник <span class="badge badge-orange">PREMIUM</span></h4><ul class="route-list">
+  <li>Перекидной календарь (card stack)</li>
+  <li>3 режима: День / Неделя / Месяц</li>
+  <li>Свайпы для навигации</li>
+  <li>Редактирование / шаринг записей</li>
+  <li>Автогенерация после путешествия</li>
+</ul></div>
+<div class="card"><h4>✨ Premium</h4><ul class="route-list">
+  <li><span class="path">/premium/paywall</span> оплата</li>
+  <li><span class="path">/premium/guardian-creator</span></li>
+  <li>PremiumGateSheet (модальное)</li>
+  <li>PremiumCTA (4+ мест размещения)</li>
+  <li>Лимит: 1 цикл (3 сферы) / день</li>
+</ul></div>
+<div class="card"><h4>🛡️ Безопасность</h4><ul class="route-list">
+  <li><span class="path">/disclaimer</span> «не замена терапии»</li>
+  <li><span class="path">/emergency</span> кризисные телефоны</li>
+  <li><span class="path">/help</span> FAQ + поддержка</li>
+</ul></div>
+<div class="card"><h4>📊 Админ <span class="badge badge-red">ADMIN</span></h4><ul class="route-list">
+  <li>/overview — DAU/MAU/retention/heatmap</li>
+  <li>/funnel — воронка + dropout</li>
+  <li>/cta — CTA-аналитика</li>
+  <li>/users — профили пользователей</li>
+  <li>/partners — партнёры</li>
+</ul></div>
+<div class="card"><h4>🤖 Telegram-бот</h4><ul class="route-list">
+  <li>Утренние уведомления</li>
+  <li>Практика дня</li>
+  <li>Напоминание о возвращении</li>
+  <li>Онбординг через бот</li>
+  <li>Premium CTA</li>
+</ul></div>
+<div class="card"><h4>🎬 Видео-интерлюдии</h4><ul class="route-list">
+  <li>to-spheres.mp4 (welcome → spheres)</li>
+  <li>assess-to-path.mp4 (assess → path)</li>
+  <li>emdr-butterfly.mp4 (shape → emdr, loop)</li>
+  <li>success-to-summary.mp4</li>
+  <li>Все с blur-фоном по бокам</li>
+</ul></div>
+</div>
+
+<h2 id="flows">3. User Flows</h2>
+
+<h3>3.1 Онбординг (новый пользователь)</h3>
+<div class="flow"><div class="flow-steps">
+  <span class="flow-step">/intro</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/about-you</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/login</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/auth-callback</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/disclaimer</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/welcome</span> <span class="flow-arrow">→</span>
+  <span class="flow-step video">🎬 to-spheres.mp4</span> <span class="flow-arrow">→</span>
+  <span class="flow-step active">/journey/spheres</span>
+</div>
+<div class="cond">Альтернатива: /auth-invite?ref=XYZ → draft → /login → восстановление draft</div>
+</div>
+
+<h3>3.2 Полное путешествие (вариант «deep»)</h3>
+<div class="flow"><div class="flow-steps">
+  <span class="flow-step">/spheres</span> <span class="flow-arrow">→</span>
+  <span class="flow-step video">🎬 interlude</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/assess</span> <span class="flow-arrow">→</span>
+  <span class="flow-step video">🎬 interlude</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/path</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/sphere-entry</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/sphere-task</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/goal</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/fears</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/feeling</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/current-state</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/resistance</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/resistance-shape</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/emdr-intro</span> <span class="flow-arrow">→</span>
+  <span class="flow-step video">🎬 interlude</span> <span class="flow-arrow">→</span>
+  <span class="flow-step active">/emdr</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/reassess</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/practice-select</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/practice-run</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/success</span> <span class="flow-arrow">→</span>
+  <span class="flow-step video">🎬 interlude</span> <span class="flow-arrow">→</span>
+  <span class="flow-step active">/summary</span>
+</div></div>
+
+<h3>3.3 Ежедневный цикл</h3>
+<div class="flow"><div class="flow-steps">
+  <span class="flow-step">/home</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">чекин</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/journey/spheres</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">путешествие</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">/summary</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">шаг в жизнь</span> <span class="flow-arrow">→</span>
+  <span class="flow-step active">/home</span>
+</div>
+<div class="cond">Free: 1 цикл (3 сферы) / день → DailyLimitCard → «Вернуться завтра» или «Подключить Premium»</div>
+</div>
+
+<h3>3.4 Premium flow</h3>
+<div class="flow"><div class="flow-steps">
+  <span class="flow-step gate">Лимит / гейт</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">PremiumGateSheet</span> <span class="flow-arrow">→</span>
+  <span class="flow-step premium">/premium/paywall</span> <span class="flow-arrow">→</span>
+  <span class="flow-step">activatePremiumMock()</span> <span class="flow-arrow">→</span>
+  <span class="flow-step active">фича разблокирована</span>
+</div></div>
+
+<h2 id="variants">4. Все 10 вариантов путешествий</h2>
+<table>
+<thead><tr><th>Вариант</th><th>Шаги (после /path и sphere-entry)</th><th>Шагов</th></tr></thead>
+<tbody>
+  <tr><td><strong>deep</strong></td><td>goal → fears → feeling → resistance → resistance-shape → emdr → practice-select → practice-run → reassess → success → summary</td><td>11</td></tr>
+  <tr><td><strong>somatic</strong></td><td>goal → feeling → somatic-work → reassess → practice-select → practice-run → success → summary</td><td>8</td></tr>
+  <tr><td><strong>creative</strong></td><td>goal → feeling → creative-express → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>narrative</strong></td><td>goal → narrative-write → feeling → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>meditative</strong></td><td>goal → feeling → breathing-work → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>dialogue</strong></td><td>goal → feeling → self-letter → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>gratitude</strong></td><td>goal → gratitude-focus → feeling → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>polarity</strong></td><td>goal → polarity-map → feeling → practice-select → practice-run → success → summary</td><td>7</td></tr>
+  <tr><td><strong>fear-lens</strong></td><td>goal → fears → fear-reframe → feeling → practice-select → practice-run → success → summary</td><td>8</td></tr>
+  <tr><td><strong>quick</strong></td><td>goal → practice-select → practice-run → success → summary</td><td>5</td></tr>
+</tbody>
+</table>
+
+<h2 id="spheres">5. Сферы и маршрутизация</h2>
+<table>
+<thead><tr><th>Сфера</th><th>Entry</th><th>Task</th><th>Варианты (по типу проблемы)</th></tr></thead>
+<tbody>
+  <tr><td>💞 Отношения</td><td>/rel-entry</td><td>/sphere-task-relationships</td><td>deep, dialogue, polarity</td></tr>
+  <tr><td>🏡 Семья</td><td>/fam-entry</td><td>—</td><td>deep, dialogue, narrative</td></tr>
+  <tr><td>🌟 Карьера</td><td>/career-entry</td><td>/sphere-task-career</td><td>somatic+dialogue, polarity, deep</td></tr>
+  <tr><td>💛 Финансы</td><td>/finance-entry</td><td>—</td><td>fear-lens+polarity, gratitude+creative, polarity</td></tr>
+  <tr><td>🌱 Развитие</td><td>/growth-entry</td><td>—</td><td>fear-lens, narrative, gratitude+creative</td></tr>
+  <tr><td>🌿 Здоровье</td><td>/health-entry</td><td>/sphere-task-health</td><td>somatic+breathing, breathing, gratitude</td></tr>
+  <tr><td>🌙 Отдых</td><td>/rest-entry</td><td>—</td><td>breathing+dialogue, dialogue, polarity</td></tr>
+  <tr><td>🤝 Окружение</td><td>/people-entry</td><td>—</td><td>deep, gratitude, creative</td></tr>
+</tbody>
+</table>
+
+<h2 id="sphere-flows">6. Схемы путешествий по сферам</h2>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));">
+
+<div class="card">
+  <h4>💞 Отношения (relationships)</h4>
+  <h3 style="font-size:0.85rem">CONFLICT</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rel-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance-shape</span><span class="flow-arrow">→</span>
+    <span class="flow-step active">emdr</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">DISTANCE</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rel-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">self-letter</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">IMPROVE | SEEKING</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rel-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">feeling</span><span class="flow-arrow">→</span>
+    <span class="flow-step">polarity-map</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🏡 Семья (family)</h4>
+  <h3 style="font-size:0.85rem">TENSION</h3>
+  <div class="flow-steps">
+    <span class="flow-step">fam-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance-shape</span><span class="flow-arrow">→</span>
+    <span class="flow-step active">emdr</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">DISCONNECTION</h3>
+  <div class="flow-steps">
+    <span class="flow-step">fam-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">self-letter</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">ROLES</h3>
+  <div class="flow-steps">
+    <span class="flow-step">fam-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">narrative-write</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🌟 Карьера (career)</h4>
+  <h3 style="font-size:0.85rem">BURNOUT</h3>
+  <div class="flow-steps">
+    <span class="flow-step">career-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">feeling</span><span class="flow-arrow">→</span>
+    <span class="flow-step">somatic-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">self-letter</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">NO-MEANING</h3>
+  <div class="flow-steps">
+    <span class="flow-step">career-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">polarity-map</span><span class="flow-arrow">→</span>
+    <span class="flow-step">creative-express</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">CONFLICT</h3>
+  <div class="flow-steps">
+    <span class="flow-step">career-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance-shape</span><span class="flow-arrow">→</span>
+    <span class="flow-step active">emdr</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>💛 Финансы (finance)</h4>
+  <h3 style="font-size:0.85rem">FEAR</h3>
+  <div class="flow-steps">
+    <span class="flow-step">finance-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">fear-reframe</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">polarity-map</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">CHAOS</h3>
+  <div class="flow-steps">
+    <span class="flow-step">finance-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">polarity-map</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">BLOCKED-DREAM</h3>
+  <div class="flow-steps">
+    <span class="flow-step">finance-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">gratitude-focus</span><span class="flow-arrow">→</span>
+    <span class="flow-step">creative-express</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🌱 Развитие (growth)</h4>
+  <h3 style="font-size:0.85rem">FEAR-FAIL</h3>
+  <div class="flow-steps">
+    <span class="flow-step">growth-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">fears</span><span class="flow-arrow">→</span>
+    <span class="flow-step">fear-reframe</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">PROCRASTINATION</h3>
+  <div class="flow-steps">
+    <span class="flow-step">growth-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">feeling</span><span class="flow-arrow">→</span>
+    <span class="flow-step">narrative-write</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">DIRECTION</h3>
+  <div class="flow-steps">
+    <span class="flow-step">growth-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">gratitude-focus</span><span class="flow-arrow">→</span>
+    <span class="flow-step">creative-express</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🌿 Здоровье (health)</h4>
+  <h3 style="font-size:0.85rem">SCORE ≤ 3 (критичное)</h3>
+  <div class="flow-steps">
+    <span class="flow-step" style="opacity:0.5">health-entry пропуск</span><span class="flow-arrow">→</span>
+    <span class="flow-step">somatic-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">breathing-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">BODY-PAIN</h3>
+  <div class="flow-steps">
+    <span class="flow-step">health-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">somatic-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">breathing-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">HABIT</h3>
+  <div class="flow-steps">
+    <span class="flow-step">health-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">feeling</span><span class="flow-arrow">→</span>
+    <span class="flow-step">breathing-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">ENERGY</h3>
+  <div class="flow-steps">
+    <span class="flow-step">health-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">gratitude-focus</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🌙 Отдых (rest)</h4>
+  <h3 style="font-size:0.85rem">CANT-RELAX</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rest-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">breathing-work</span><span class="flow-arrow">→</span>
+    <span class="flow-step">self-letter</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">GUILT</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rest-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">self-letter</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">NO-TIME</h3>
+  <div class="flow-steps">
+    <span class="flow-step">rest-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">polarity-map</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+<div class="card">
+  <h4>🤝 Окружение (people)</h4>
+  <h3 style="font-size:0.85rem">TOXIC</h3>
+  <div class="flow-steps">
+    <span class="flow-step">people-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance</span><span class="flow-arrow">→</span>
+    <span class="flow-step">resistance-shape</span><span class="flow-arrow">→</span>
+    <span class="flow-step active">emdr</span><span class="flow-arrow">→</span>
+    <span class="flow-step">reassess</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">LONELY</h3>
+  <div class="flow-steps">
+    <span class="flow-step">people-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">gratitude-focus</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+  <h3 style="font-size:0.85rem">EXPAND</h3>
+  <div class="flow-steps">
+    <span class="flow-step">people-entry</span><span class="flow-arrow">→</span>
+    <span class="flow-step">goal</span><span class="flow-arrow">→</span>
+    <span class="flow-step">creative-express</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-select</span><span class="flow-arrow">→</span>
+    <span class="flow-step">practice-run</span><span class="flow-arrow">→</span>
+    <span class="flow-step">success</span><span class="flow-arrow">→</span>
+    <span class="flow-step" style="background:#e8f5e9;border-color:#81c784">summary</span>
+  </div>
+</div>
+
+</div>
+
+<div class="cond">Примечание: все путешествия начинаются с <strong>/spheres → assess → path → sphere-entry</strong> перед показанными шагами. EMDR-шаги включают emdr-intro → emdr (через COMMON transitions). Зелёным выделены EMDR-шаги.</div>
+
+<h2 id="states">7. Состояния экранов</h2>
+<table>
+<thead><tr><th>Экран</th><th>Loading</th><th>Empty</th><th>Error</th><th>Условное</th></tr></thead>
+<tbody>
+  <tr><td>/home</td><td>Дышащий круг</td><td>—</td><td>Graceful fallback</td><td>WorldStateChangedModal при смене мира</td></tr>
+  <tr><td>/diary</td><td>«Загрузка…»</td><td>«Дневник пока пуст»</td><td>—</td><td>!isPremium → CTA paywall</td></tr>
+  <tr><td>/profile</td><td>Skeleton</td><td>«Нет завершённых путешествий»</td><td>—</td><td>isPremium → badge + хранители</td></tr>
+  <tr><td>/practices</td><td>—</td><td>—</td><td>—</td><td>Locked для free</td></tr>
+  <tr><td>/journey/spheres</td><td>—</td><td>—</td><td>—</td><td>dailyCycleLimited → overlay</td></tr>
+  <tr><td>/journey/summary</td><td>—</td><td>—</td><td>—</td><td>DailyLimitCard (free, no next)</td></tr>
+  <tr><td>/journey/emdr</td><td>—</td><td>—</td><td>—</td><td>done → кнопка проверки</td></tr>
+  <tr><td>/_authenticated</td><td>Дышащий круг</td><td>—</td><td>→ /intro</td><td>!session / !onboarding → /intro</td></tr>
+  <tr><td>/welcome</td><td>—</td><td>—</td><td>—</td><td>Fullscreen video overlay</td></tr>
+</tbody>
+</table>
+
+<h3>6.1 Модальные окна и оверлеи</h3>
+<table>
+<thead><tr><th>Компонент</th><th>Триггер</th><th>Где</th></tr></thead>
+<tbody>
+  <tr><td>WorldStateChangedModal</td><td>world_state_id изменился</td><td>/home</td></tr>
+  <tr><td>PremiumGateSheet</td><td>Доступ к premium-фиче</td><td>Любой экран</td></tr>
+  <tr><td>EvaInterludeHost</td><td>Переходы путешествия</td><td>Глобально</td></tr>
+  <tr><td>DailyLimitCard</td><td>3 сферы завершены (free)</td><td>/summary</td></tr>
+  <tr><td>Daily cycle overlay</td><td>checkDailyCycleLimit()</td><td>/spheres</td></tr>
+  <tr><td>Video overlay (welcome)</td><td>Клик «Давай»</td><td>/welcome</td></tr>
+  <tr><td>MusicToggle</td><td>Всегда</td><td>Journey-экраны</td></tr>
+</tbody>
+</table>
+
+<h2 id="premium">8. Premium-гейтинг</h2>
+<table>
+<thead><tr><th>Фича</th><th>Free</th><th>Premium</th><th>Механизм</th></tr></thead>
+<tbody>
+  <tr><td>Путешествия</td><td>1 цикл (3 сферы) / день</td><td>Без ограничений</td><td>checkDailyCycleLimit()</td></tr>
+  <tr><td>Практики</td><td>Только stabilization</td><td>Все типы</td><td>canUsePractice()</td></tr>
+  <tr><td>Дневник</td><td>Заглушка + CTA</td><td>Полный доступ</td><td>isPremium в diary.tsx</td></tr>
+  <tr><td>Хранители</td><td>CTA → paywall</td><td>Создание + просмотр</td><td>isPremium в profile.tsx</td></tr>
+  <tr><td>Мир Евы</td><td>Базовый</td><td>4 динамических состояния</td><td>world_state_id</td></tr>
+  <tr><td>XP множитель</td><td>×1.0</td><td>×1.5</td><td>xp_multiplier</td></tr>
+  <tr><td>Premium badge</td><td>—</td><td>«✦ Premium» в профиле</td><td>isPremium</td></tr>
+</tbody>
+</table>
+
+<h2 id="charter-in">9. Устав: In-Scope — статус</h2>
+<table>
+<thead><tr><th>Пункт устава</th><th>Статус</th><th>Комментарий</th></tr></thead>
+<tbody>
+  <tr><td>Базовая концепция и игровая логика</td><td class="status-done">✅ Реализовано</td><td>XP, монеты, уровни, стрики, бейджи, магазин</td></tr>
+  <tr><td>8 сфер жизни / колесо баланса</td><td class="status-done">✅ Реализовано</td><td>Интерактивное колесо, sphere-specific маршрутизация</td></tr>
+  <tr><td>MVP веб-приложения</td><td class="status-done">✅ Превышено</td><td>SSR на Cloudflare Workers вместо Lovable no-code</td></tr>
+  <tr><td>Базовый пользовательский сценарий</td><td class="status-done">✅ Реализовано</td><td>10 вариантов путешествий, 33 экрана</td></tr>
+  <tr><td>Онбординг и первое путешествие</td><td class="status-done">✅ Реализовано</td><td>6-шаговый онбординг с видео</td></tr>
+  <tr><td>1 уровень личности («Выживание»)</td><td class="status-partial">⚠️ Трансформировано</td><td>10 XP-уровней вместо нарративного «Выживание»</td></tr>
+  <tr><td>7–10 дней микро-практик</td><td class="status-partial">⚠️ Трансформировано</td><td>104 микро-действия, открытая структура вместо линейного курса</td></tr>
+  <tr><td>1 персонаж-хранитель</td><td class="status-done">✅ Реализовано</td><td>Хранители для каждой сферы с генератором</td></tr>
+  <tr><td>Визуальный экран «мира личности»</td><td class="status-done">✅ Реализовано</td><td>4 состояния мира, динамическая смена</td></tr>
+  <tr><td>Базовая игровая механика</td><td class="status-done">✅ Реализовано</td><td>XP, монеты, уровни 1-10, стрики, 9 бейджей</td></tr>
+  <tr><td>Нарративная деградация мира</td><td class="status-done">✅ Реализовано</td><td>Мир увядает + Telegram предупреждает</td></tr>
+  <tr><td>UX-тестирование на ≥10 ЦА</td><td class="status-partial">⚠️ Инструменты есть</td><td>Admin-панель с воронкой; процессный пункт</td></tr>
+  <tr><td>Сбор обратной связи и UX-метрик</td><td class="status-partial">⚠️ Частично</td><td>Воронка + CTA; нет NPS/Safety/Relief</td></tr>
+</tbody>
+</table>
+
+<h2 id="charter-out">10. Устав: Out-of-Scope — но реализовано</h2>
+<table>
+<thead><tr><th>Пункт устава (Out-of-Scope)</th><th>Статус</th><th>Что сделано</th></tr></thead>
+<tbody>
+  <tr><td>Комплексная модель монетизации</td><td class="status-extra">🔵 Реализовано</td><td>Premium 1990₽/мес, 9990₽/год, гейтинг, лимиты</td></tr>
+  <tr><td>Подписочная система</td><td class="status-extra">🔵 Реализовано</td><td>Mock-активация с paywall UI</td></tr>
+  <tr><td>Персонализация онбординга</td><td class="status-extra">🔵 Частично</td><td>Роли, сферы, ты/вы, sphere-specific маршруты</td></tr>
+  <tr><td>Интеграция с психологами</td><td class="status-extra">🔵 Частично</td><td>/partners/psychologist + аналитика</td></tr>
+  <tr><td>Мобильная версия</td><td class="status-extra">🔵 Адаптивная</td><td>Responsive, PWA-ready</td></tr>
+  <tr><td>ИИ-диалоги</td><td class="status-missing">❌ Не реализовано</td><td>Корректно за рамками</td></tr>
+  <tr><td>Социальные функции</td><td class="status-missing">❌ Не реализовано</td><td>Корректно за рамками</td></tr>
+  <tr><td>A/B тестирование</td><td class="status-missing">❌ Не реализовано</td><td>Нет когортного деления</td></tr>
+  <tr><td>AI-персонализация</td><td class="status-missing">❌ Не реализовано</td><td>Корректно за рамками</td></tr>
+</tbody>
+</table>
+
+<h2 id="charter-extra">11. Сверх устава (не упоминалось)</h2>
+<table>
+<thead><tr><th>Функция</th><th>Масштаб</th></tr></thead>
+<tbody>
+  <tr><td>Telegram-бот</td><td>Уведомления, практики дня, аналитика, онбординг, Premium CTA</td></tr>
+  <tr><td>Дневник Евы</td><td>Перекидной календарь, 3 режима, card stack, авто-генерация</td></tr>
+  <tr><td>EMDR-терапия</td><td>Анимация (шар, 3 цикла), интегрирована в путешествия</td></tr>
+  <tr><td>20+ практик</td><td>breathing, somatic, self-letter, narrative, creative, polarity, gratitude, fear-reframe</td></tr>
+  <tr><td>Admin-панель</td><td>5 разделов: обзор, воронка, CTA, пользователи, партнёры</td></tr>
+  <tr><td>Магазин практик</td><td>Покупка за монеты, 3 категории</td></tr>
+  <tr><td>104 микро-действия</td><td>13 вариантов × 8 сфер, ежедневная ротация</td></tr>
+  <tr><td>9 бейджей</td><td>Генерация sharable PNG-карточки</td></tr>
+  <tr><td>4 видео-интерлюдии</td><td>С blur-фоном по бокам</td></tr>
+  <tr><td>Система ты/вы</td><td>Глобальный переключатель формальности</td></tr>
+  <tr><td>Ambient-треки</td><td>Bowls, rain и др.</td></tr>
+  <tr><td>Анимация наград</td><td>CountUp, частицы, glow-пульс</td></tr>
+  <tr><td>SSR Cloudflare Workers</td><td>2 worker'а (dev + premium)</td></tr>
+  <tr><td>Партнёрская программа</td><td>Реферальные ссылки, аналитика</td></tr>
+  <tr><td>Чекин настроения</td><td>Слайдер на главном экране</td></tr>
+</tbody>
+</table>
+
+<h2 id="missing">12. Отсутствующие, но ожидаемые экраны/состояния</h2>
+<table>
+<thead><tr><th>Экран / состояние</th><th>Почему ожидается</th><th>Приоритет</th></tr></thead>
+<tbody>
+  <tr><td>Опрос NPS / Relief / Safety</td><td>Устав требует метрики; нет экрана сбора</td><td class="status-missing">Высокий</td></tr>
+  <tr><td>Настройки пользователя</td><td>152-ФЗ: удаление данных; нет экрана настроек</td><td class="status-missing">Высокий</td></tr>
+  <tr><td>Google OAuth Client ID</td><td>Код есть, но Supabase не настроен</td><td class="status-missing">Высокий</td></tr>
+  <tr><td>Линейный курс «7–10 дней»</td><td>Устав описывает подготовленный контент</td><td class="status-partial">Средний</td></tr>
+  <tr><td>Уровень «Выживание»</td><td>Устав: нарративный уровень</td><td class="status-partial">Низкий</td></tr>
+  <tr><td>404 страница</td><td>Стандартная практика</td><td class="status-partial">Низкий</td></tr>
+  <tr><td>Offline fallback</td><td>PWA-ожидание мобильных пользователей</td><td class="status-partial">Средний</td></tr>
+  <tr><td>Radar chart по сферам</td><td>Колесо баланса → визуализация прогресса</td><td class="status-partial">Средний</td></tr>
+  <tr><td>Реальная оплата Premium</td><td>Mock есть; платёжная интеграция нет</td><td class="status-partial">После MVP</td></tr>
+  <tr><td>Web push-уведомления</td><td>Для пользователей без Telegram</td><td class="status-partial">Низкий</td></tr>
+</tbody>
+</table>
+
+<hr style="margin: 3rem 0; border: none; border-top: 1px solid var(--border);">
+<p style="text-align: center; color: var(--muted); font-size: 0.8rem;">
+  Карта приложения ЕВА · 68 маршрутов · 10 вариантов путешествий · 8 сфер · 104 микро-действия · Июнь 2026
+</p>
+</body>
+</html>

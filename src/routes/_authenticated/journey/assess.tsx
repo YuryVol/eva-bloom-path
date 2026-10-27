@@ -10,6 +10,7 @@ import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
 import { SPHERES, type SphereId } from "@/lib/journey-types";
+import { getEntryStep } from "@/lib/sphere-journeys";
 
 export const Route = createFileRoute("/_authenticated/journey/assess")({
   component: AssessScreen,
@@ -19,7 +20,7 @@ const HERO_SRC = "/assets/eva/eva-main-portrait.png";
 const HERO_ALT = "Ева рядом с тобой, тёплый свет вокруг";
 
 function AssessScreen() {
-  const { state, patch, journeyId, setStep, loaded } = useJourneyStore();
+  const { state, patch, journeyId, pushStep, loaded } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
@@ -55,10 +56,11 @@ function AssessScreen() {
 
     const next = { ...state, priority_sphere: priority };
     patch({ priority_sphere: priority });
-    setStep("path");
-    await save({ data: { id: journeyId, state: next as never, current_step: "path" } });
+    const entryStep = getEntryStep(priority, next);
+    pushStep(entryStep);
+    await save({ data: { id: journeyId, state: next as never, current_step: entryStep } });
     await useInterlude.getState().play("assess-to-path", Infinity);
-    navigate({ to: "/journey/path" as never });
+    navigate({ to: `/journey/${entryStep}` as never });
   };
 
   if (spheres.length === 0) {

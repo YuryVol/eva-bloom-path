@@ -9,7 +9,10 @@ import {
 } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useJourneyStore } from "@/lib/journey-store";
+import { useOnboardingDraft } from "@/lib/onboarding-store";
 import { MusicToggle } from "@/components/eva/MusicToggle";
+import { AmbientPlayer } from "@/components/eva/AmbientPlayer";
 
 import appCss from "../styles.css?url";
 
@@ -96,9 +99,13 @@ function AuthSync() {
   const router = useRouter();
   const qc = useQueryClient();
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       router.invalidate();
       qc.invalidateQueries();
+      if (event === "SIGNED_OUT") {
+        useJourneyStore.getState().reset();
+        useOnboardingDraft.getState().reset();
+      }
     });
     return () => subscription.unsubscribe();
   }, [router, qc]);
@@ -111,6 +118,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthSync />
       <Toaster theme="dark" position="top-center" />
+      <AmbientPlayer />
       <MusicToggle />
       <Outlet />
     </QueryClientProvider>

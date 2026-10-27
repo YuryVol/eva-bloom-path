@@ -1,16 +1,16 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { AmbientBackground } from "@/components/eva/AmbientBackground";
 import { GlowButton } from "@/components/eva/GlowButton";
 import { LegalModal } from "@/components/eva/LegalModal";
 import { PrivacyPolicyContent } from "@/components/eva/legal/PrivacyPolicyContent";
 import { TermsOfUseContent } from "@/components/eva/legal/TermsOfUseContent";
 import { useOnboardingDraft } from "@/lib/onboarding-store";
+import { useAddress } from "@/lib/use-address";
 import { upsertOnboarding } from "@/lib/onboarding.functions";
 
 export const Route = createFileRoute("/auth-invite")({
@@ -18,17 +18,17 @@ export const Route = createFileRoute("/auth-invite")({
   head: () => ({ meta: [{ title: "Регистрация — ЕВА" }] }),
 });
 
-const BENEFITS = [
+const BENEFITS: Array<string | { ty: string; vy: string }> = [
   "сохранять свой прогресс и достижения",
   "возвращаться к своим маршрутам восстановления",
   "не проходить приветственные экраны повторно",
   "получать персональные рекомендации и новые практики",
-  "продолжать путь с того места, где остановилась",
+  { ty: "продолжать путь с того места, где остановилась", vy: "продолжать путь с того места, где остановились" },
 ];
 
 function RegisterIcon() {
   return (
-    <div className="relative mx-auto mb-6 flex h-64 w-full items-center justify-center md:h-80">
+    <div className="relative mx-auto mb-6 flex h-64 w-full items-center justify-center md:h-[460px]">
       {/* radial halo */}
       <div
         className="pointer-events-none absolute inset-[-10%] rounded-full"
@@ -77,6 +77,7 @@ function RegisterIcon() {
 
 function AuthInviteScreen() {
   const navigate = useNavigate();
+  const a = useAddress();
   const draft = useOnboardingDraft();
   const save = useServerFn(upsertOnboarding);
   const [loading, setLoading] = useState(false);
@@ -101,21 +102,20 @@ function AuthInviteScreen() {
 
   const handleGoogle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("Не удалось войти через Google");
-      setLoading(false);
-      return;
-    }
-    if (result.redirected) return;
     try {
       await persistDraft("google");
     } catch {
       // non-blocking
     }
-    navigate({ to: "/welcome" });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth-callback` },
+    });
+    if (error) {
+      toast.error("Не удалось войти через Google");
+      setLoading(false);
+    }
+    // browser redirects to Google on success — no further action needed
   };
 
   const handleGuest = async () => {
@@ -123,10 +123,20 @@ function AuthInviteScreen() {
     try {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        const { error } = await supabase.auth.signInAnonymously();
-        if (error) throw error;
+        // Use worker proxy so browsers that cannot reach supabase.co directly still work.
+        const resp = await fetch("/api/auth/anonymous", { method: "POST" });
+        const json = await resp.json() as { access_token?: string; refresh_token?: string; error_description?: string };
+        if (!resp.ok || !json.access_token) {
+          throw new Error(json.error_description ?? "Не удалось войти анонимно");
+        }
+        const { error: setErr } = await supabase.auth.setSession({
+          access_token: json.access_token,
+          refresh_token: json.refresh_token ?? "",
+        });
+        if (setErr) throw setErr;
       }
-      await persistDraft("guest");
+      // non-blocking — onboarding save failure must not block navigation
+      persistDraft("guest").catch(() => {});
       navigate({ to: "/welcome" });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Не удалось продолжить");
@@ -166,28 +176,40 @@ function AuthInviteScreen() {
   return (
     <main className="relative min-h-[100dvh] px-6 py-8">
       <AmbientBackground theme="safe" />
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-6xl items-center md:px-6">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9 }}
-        className="mx-auto w-full max-w-md"
+        className="flex w-full flex-col items-center gap-6 md:grid md:grid-cols-[1fr_1fr] md:items-center md:gap-12"
       >
-        <RegisterIcon />
+        {/* LEFT — image only, enlarged */}
+        <div className="flex items-center justify-center">
+          <div className="w-full max-w-sm md:max-w-none">
+            <RegisterIcon />
+          </div>
+        </div>
 
-        <h1 className="text-center font-display text-2xl text-glow md:text-3xl">
-          Ты можешь зарегистрироваться, чтобы:
+        {/* RIGHT — title + benefits + buttons */}
+        <div className="w-full">
+        <h1 className="font-display text-2xl text-glow md:text-3xl">
+          {a.vy ? "Вы можете зарегистрироваться, чтобы:" : "Ты можешь зарегистрироваться, чтобы:"}
         </h1>
 
-        <ul className="mx-auto mt-6 max-w-sm space-y-3 text-[15px] leading-relaxed text-muted-foreground">
-          {BENEFITS.map((b) => (
-            <li key={b} className="flex gap-3">
+        <ul className="mt-5 space-y-3 text-[15px] leading-relaxed text-muted-foreground">
+          {BENEFITS.map((b, i) => {
+            const text = typeof b === "string" ? b : a.vy ? b.vy : b.ty;
+            return (
+            <li key={i} className="flex gap-3">
               <span className="mt-2 block size-1.5 shrink-0 rounded-full bg-primary/70 shadow-[0_0_8px_rgba(255,236,170,0.7)]" />
-              <span>{b}</span>
+              <span>{text}</span>
             </li>
-          ))}
+            );
+          })}
         </ul>
 
-        <div className="mt-8 space-y-3">
+        <div className="mt-8">
+        <div className="space-y-3">
           <button
             type="button"
             onClick={handleGoogle}
@@ -256,9 +278,9 @@ function AuthInviteScreen() {
           <GlowButton variant="ghost" onClick={handleGuest} disabled={loading} className="w-full">
             Продолжить без регистрации
           </GlowButton>
-        </div>
+        </div>{/* end mt-8 buttons div */}
 
-        <p className="mt-6 text-center text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
           Продолжая, вы соглашаетесь с{" "}
           <button
             type="button"
@@ -275,9 +297,18 @@ function AuthInviteScreen() {
           >
             Условиями использования приложения
           </button>
-          .
+          .{" "}
+          <Link
+            to="/disclaimer"
+            className="cursor-pointer underline underline-offset-2 transition hover:text-foreground"
+          >
+            О ЕВЕ — важное
+          </Link>
         </p>
+        </div>{/* end mt-8 + legal */}
+        </div>{/* end right column */}
       </motion.div>
+      </div>
 
       <LegalModal
         open={legalModal === "privacy"}

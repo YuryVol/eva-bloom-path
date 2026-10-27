@@ -34,8 +34,8 @@ export function EmdrAnimation({ cycles = 3, onComplete }: { cycles?: number; onC
   }, [running, cycles, onComplete]);
 
   return (
-    <div className="flex flex-col items-center gap-10 py-6">
-      <div className="relative h-28 w-full max-w-md overflow-hidden rounded-full bg-muted">
+    <div className="flex w-full flex-col items-center gap-10 py-6">
+      <div className="relative h-24 w-full overflow-hidden rounded-full bg-muted md:h-32">
         {running && (
           <motion.div
             className="absolute top-1/2 -translate-y-1/2 size-14 rounded-full bg-primary"

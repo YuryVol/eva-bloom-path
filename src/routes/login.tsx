@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { AmbientBackground } from "@/components/eva/AmbientBackground";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -51,16 +50,17 @@ function LoginPage() {
 
   const handleGoogle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth-callback`,
+      },
     });
-    if (result.error) {
+    if (error) {
       toast.error("Не удалось войти через Google");
       setLoading(false);
-      return;
     }
-    if (result.redirected) return;
-    navigate({ to: "/journey/spheres" });
+    // browser redirects to Google — no further action needed
   };
 
   return (
@@ -137,13 +137,16 @@ function LoginPage() {
           type="button"
           onClick={async () => {
             setLoading(true);
-            const { error } = await supabase.auth.signInAnonymously();
-            if (error) {
+            try {
+              const resp = await fetch("/api/auth/anonymous", { method: "POST" });
+              const json = await resp.json() as { access_token?: string; refresh_token?: string; error_description?: string };
+              if (!resp.ok || !json.access_token) throw new Error(json.error_description ?? "Ошибка");
+              await supabase.auth.setSession({ access_token: json.access_token, refresh_token: json.refresh_token ?? "" });
+              navigate({ to: "/journey/spheres" });
+            } catch {
               toast.error("Не удалось войти анонимно");
               setLoading(false);
-              return;
             }
-            navigate({ to: "/journey/spheres" });
           }}
           disabled={loading}
           className="mt-6 w-full text-center text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"

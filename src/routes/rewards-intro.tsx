@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { GlowButton } from "@/components/eva/GlowButton";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/rewards-intro")({
   component: RewardsIntroScreen,
@@ -8,16 +9,17 @@ export const Route = createFileRoute("/rewards-intro")({
 });
 
 const COINS_ITEMS = [
-  { icon: "🗝️", label: "Секретные задания", desc: "Особые практики не для всех" },
-  { icon: "🌿", label: "Новый персонаж", desc: "Расширь свой мир Евы" },
+  { icon: "🔓", label: "Особые практики", desc: "Дополнительные техники для глубокой работы" },
+  { icon: "🎨", label: "Тема интерфейса", desc: "Альтернативный стиль оформления" },
 ];
 
-const XP_ITEMS = [
-  { icon: "🏆", label: "Рейтинг среди игроков", desc: "Твоё место в общем пространстве" },
+const XP_ITEMS: Array<{ icon: string; label: string; desc: string | { ty: string; vy: string } }> = [
+  { icon: "🏆", label: "Рейтинг среди игроков", desc: { ty: "Твоё место в общем пространстве", vy: "Ваше место в общем пространстве" } },
   { icon: "🗺️", label: "Новые уровни", desc: "Открываются территории и возможности" },
 ];
 
 function RewardsIntroScreen() {
+  const a = useAddress();
   const navigate = useNavigate();
 
   return (
@@ -42,10 +44,10 @@ function RewardsIntroScreen() {
           Как устроен мир ЕВА
         </p>
         <h1 className="mt-3 text-center font-display text-3xl text-glow md:text-4xl">
-          Твой путь приносит награды
+          {a.vy ? "Ваш путь приносит награды" : "Твой путь приносит награды"}
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm leading-relaxed text-muted-foreground">
-          За каждый шаг ты получаешь монеты и очки опыта — вот на что они нужны.
+          {a.vy ? "За каждый шаг вы получаете монеты и очки опыта — вот на что они нужны." : "За каждый шаг ты получаешь монеты и очки опыта — вот на что они нужны."}
         </p>
 
         {/* Two-column scheme */}
@@ -97,7 +99,9 @@ function RewardsIntroScreen() {
                   <span className="mt-0.5 text-base leading-none">{item.icon}</span>
                   <div>
                     <p className="text-sm font-medium text-foreground/90">{item.label}</p>
-                    <p className="text-[11px] leading-snug text-muted-foreground">{item.desc}</p>
+                    <p className="text-[11px] leading-snug text-muted-foreground">
+                      {typeof item.desc === "string" ? item.desc : a.vy ? item.desc.vy : item.desc.ty}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -113,8 +117,10 @@ function RewardsIntroScreen() {
           className="mt-5 rounded-2xl border border-border/50 bg-card/60 px-5 py-4 text-center backdrop-blur-sm"
         >
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Чем честнее и глубже ты работаешь — тем больше получаешь.
-            Свои слова всегда ценятся выше подсказок.
+            {a.vy
+              ? "Чем честнее и глубже вы работаете — тем больше получаете. Свои слова всегда ценятся выше подсказок."
+              : "Чем честнее и глубже ты работаешь — тем больше получаешь. Свои слова всегда ценятся выше подсказок."
+            }
           </p>
         </motion.div>
 

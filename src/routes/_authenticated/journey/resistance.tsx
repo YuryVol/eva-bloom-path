@@ -8,6 +8,7 @@ import { Slider010 } from "@/components/eva/Slider010";
 import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/_authenticated/journey/resistance")({
   component: ResistanceScreen,
@@ -25,7 +26,8 @@ function resistanceCopy(v: number) {
 }
 
 function ResistanceScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
@@ -55,7 +57,7 @@ function ResistanceScreen() {
       xp: (state.xp || 0) + 3,
     };
     patch({ resistance_score_before: value, xp: next.xp });
-    setStep("resistance-shape");
+    pushStep("resistance-shape");
     navigate({ to: "/journey/resistance-shape" as never });
     save({ data: { id: journeyId, state: next as never, current_step: "resistance-shape" } })
       .catch(() => {})
@@ -73,7 +75,7 @@ function ResistanceScreen() {
             Что-то внутри сопротивляется этому пути?
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:mt-4 md:mx-0 mx-auto">
-            Подумай о цели: «{goal}». Прислушайся к телу — что мешает внутри? Насколько сильно?
+            {a.podumaj} о цели: «{goal}». {a.prislushajs} к телу — что мешает внутри? Насколько сильно?
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
             0 — свободно. 10 — будто стена.

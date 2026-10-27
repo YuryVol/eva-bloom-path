@@ -26,6 +26,17 @@ export function EvaInterludeHost() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
+            {/* Blurred background layer */}
+            <video
+              src={cfg.video}
+              autoPlay
+              muted
+              playsInline
+              loop={cfg.loop}
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover blur-2xl scale-110 brightness-75"
+            />
+            {/* Sharp foreground — fit to height */}
             <video
               src={cfg.video}
               autoPlay
@@ -33,7 +44,8 @@ export function EvaInterludeHost() {
               playsInline
               loop={cfg.loop}
               onEnded={cfg.loop ? undefined : finish}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-auto max-w-none mx-auto object-contain"
+              style={{ left: "50%", transform: "translateX(-50%)" }}
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70" />
             <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-5 px-6 pb-10 text-center">

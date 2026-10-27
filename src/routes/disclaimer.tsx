@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, AlertCircle, Phone, X } from "lucide-react";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -116,10 +117,15 @@ function DisclaimerScreen() {
     return () => clearTimeout(t);
   }, []);
 
-  const handleNext = () => {
+  const handleNext = useCallback(async () => {
     set({ disclaimer_seen: true });
-    navigate({ to: "/about-you" });
-  };
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      navigate({ to: "/home" as never });
+    } else {
+      navigate({ to: "/about-you" as never });
+    }
+  }, [set, navigate]);
 
   return (
     <main className="relative min-h-[100dvh] overflow-hidden bg-[#F9F4EE]">

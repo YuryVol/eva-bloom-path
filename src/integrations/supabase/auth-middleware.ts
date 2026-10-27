@@ -74,7 +74,9 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No user ID found in token');
     }
 
-    // Service role client — bypasses RLS. All queries MUST filter by userId.
+    // Prefer service role key (bypasses RLS). If only anon key is available
+    // (local dev), pass the user's JWT so auth.uid() resolves correctly and
+    // standard RLS policies allow the user to access their own rows.
     const supabase = createClient<Database>(
       SUPABASE_URL,
       SUPABASE_SERVICE_KEY,
@@ -83,6 +85,9 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
           storage: undefined,
           persistSession: false,
           autoRefreshToken: false,
+        },
+        global: {
+          headers: { Authorization: `Bearer ${token}` },
         },
       }
     );

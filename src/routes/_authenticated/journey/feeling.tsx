@@ -3,11 +3,15 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { useState } from "react";
 import { GlassCard } from "@/components/eva/GlassCard";
+import { Slider010 } from "@/components/eva/Slider010";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
 import { JourneyScene, type SceneVisual } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
+import { type SphereId } from "@/lib/journey-types";
+import { getNextStep } from "@/lib/sphere-journeys";
 
 export const Route = createFileRoute("/_authenticated/journey/feeling")({
   component: FeelingScreen,
@@ -40,14 +44,27 @@ const ALL_STATE_VISUALS: SceneVisual[] = Object.entries(STATE_IMAGES).map(
   ([label, src]) => ({ src, alt: label, objectPosition: "center 30%" }),
 );
 
+function gapCopy(gap: number, desired: string) {
+  const d = desired || "это состояние";
+  if (gap <= 1) return `Ты уже почти в «${d}». Осталось дотянуться.`;
+  if (gap <= 3) return `«${d}» рядом. Расстояние небольшое — но честное.`;
+  if (gap <= 5) return `До «${d}» половина пути. ЕВА пойдёт с тобой.`;
+  if (gap <= 7) return `Путь к «${d}» долгий. Это не слабость — это правда.`;
+  return `«${d}» далеко. И именно поэтому стоит идти.`;
+}
+
 function FeelingScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
   const initialIsPreset = FEELINGS.some((f) => f.label === state.desired_state);
   const [picked, setPicked] = useState<string>(initialIsPreset ? state.desired_state : "");
   const [custom, setCustom] = useState<string>(initialIsPreset ? "" : state.desired_state || "");
+  const [currentScore, setCurrentScore] = useState<number>(
+    typeof state.current_state_score === "number" ? state.current_state_score : 5,
+  );
   const [saving, setSaving] = useState(false);
 
   const value = picked || custom.trim();
@@ -69,18 +86,20 @@ function FeelingScreen() {
     const finalValue = picked || custom.trim();
     const isCustom = !FEELINGS.some((f) => f.label === finalValue);
     setSaving(true);
-    const xpGain = isCustom ? 7 : 3;
+    const xpGain = (isCustom ? 7 : 3) + 3; // +3 XP for current state rating
     const coinGain = isCustom ? 3 : 0;
     const next = {
       ...state,
       desired_state: finalValue,
+      current_state_score: currentScore,
       xp: (state.xp || 0) + xpGain,
       coins: (state.coins || 0) + coinGain,
     };
-    patch({ desired_state: finalValue, xp: next.xp, coins: next.coins });
-    setStep("current-state");
-    navigate({ to: "/journey/current-state" as never });
-    save({ data: { id: journeyId, state: next as never, current_step: "current-state" } })
+    patch({ desired_state: finalValue, current_state_score: currentScore, xp: next.xp, coins: next.coins });
+    const nextStep = getNextStep(state.priority_sphere as SphereId, "feeling", next);
+    pushStep(nextStep);
+    navigate({ to: `/journey/${nextStep}` as never });
+    save({ data: { id: journeyId, state: next as never, current_step: nextStep } })
       .catch(() => {})
       .finally(() => setSaving(false));
   };
@@ -93,10 +112,10 @@ function FeelingScreen() {
             Желаемое состояние
           </p>
           <h1 className="mt-2 font-display text-3xl text-glow md:text-4xl">
-            Какое состояние ты хочешь приобрести?
+            Какое состояние {a.ty} {a.hochesh} приобрести?
           </h1>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground md:mx-0 mx-auto">
-            Закрой на секунду глаза. Цель достигнута — что ты чувствуешь телом?
+            {a.zakroj} на секунду глаза. Цель достигнута — что {a.ty} {a.chuvstvujesh} телом?
           </p>
         </div>
 
@@ -149,6 +168,23 @@ function FeelingScreen() {
           </GlassCard>
         </div>
 
+        <div className="mt-5">
+          <p className="mb-2 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+            {a.gde_ty} сейчас?
+          </p>
+          <GlassCard>
+            <p className="mb-3 text-xs text-muted-foreground">
+              0 — совсем нет · 10 — {a.tvoyo} состояние уже сейчас
+            </p>
+            <Slider010 value={currentScore} onChange={setCurrentScore} />
+            {value && (
+              <p className="mt-4 text-center font-display text-sm italic text-foreground/80">
+                {gapCopy(10 - currentScore, value)}
+              </p>
+            )}
+          </GlassCard>
+        </div>
+
         <div className="mt-5 flex flex-col items-center gap-1.5 md:items-start">
           {value && (
             <p className="font-display text-sm italic text-foreground/80">
@@ -158,6 +194,7 @@ function FeelingScreen() {
           <GlowButton onClick={handleNext} disabled={!canNext}>
             {saving ? "сохраняю…" : "Иду к этому"}
           </GlowButton>
+          <p className="text-xs text-muted-foreground">+3 XP за честность</p>
         </div>
       </JourneyScene>
     </FadeTransition>

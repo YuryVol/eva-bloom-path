@@ -8,6 +8,8 @@ import { JourneyScene, type SceneVisual } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
 import { SPHERES, type SphereId } from "@/lib/journey-types";
+import { getNextStep } from "@/lib/sphere-journeys";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/_authenticated/journey/goal")({
   component: GoalScreen,
@@ -85,7 +87,7 @@ const SPHERE_DEFAULT_VISUALS: Partial<Record<SphereId, SceneVisual>> = {
     objectPosition: "center 30%",
   },
   finance: {
-    src: "/assets/eva/path-finance.png",
+    src: "/assets/eva/eva-finance2.png",
     alt: "Финансы",
     objectPosition: "center 30%",
   },
@@ -125,7 +127,8 @@ const GOAL_IMAGES: Record<string, SceneVisual> = {
 };
 
 function GoalScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch, loaded } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
@@ -142,6 +145,17 @@ function GoalScreen() {
   const [saving, setSaving] = useState(false);
 
   if (!sphere) {
+    // While the journey store is still loading (e.g. after a page reload from /help),
+    // show a spinner instead of the error so the user doesn't see a false alarm.
+    if (!loaded) {
+      return (
+        <FadeTransition k="goal-loading">
+          <div className="flex items-center justify-center py-16">
+            <div className="size-10 animate-breathing rounded-full bg-primary/40" />
+          </div>
+        </FadeTransition>
+      );
+    }
     return (
       <FadeTransition k="goal-empty">
         <GlassCard>
@@ -172,9 +186,10 @@ function GoalScreen() {
       coins: (state.coins || 0) + coinGain,
     };
     patch({ desired_goal: goal, xp: next.xp, coins: next.coins });
-    setStep("fears");
-    navigate({ to: "/journey/fears" as never });
-    save({ data: { id: journeyId, state: next as never, current_step: "fears" } })
+    const nextStep = getNextStep(state.priority_sphere as SphereId, "goal", next);
+    pushStep(nextStep);
+    navigate({ to: `/journey/${nextStep}` as never });
+    save({ data: { id: journeyId, state: next as never, current_step: nextStep } })
       .catch(() => {})
       .finally(() => setSaving(false));
   };
@@ -193,10 +208,10 @@ function GoalScreen() {
             Сфера: {labelOf[sphere]}
           </p>
           <h1 className="mt-4 font-display text-3xl text-glow md:text-4xl">
-            Чего ты хочешь здесь?
+            {a.chego_ty_hochesh}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:mx-0 mx-auto">
-            Выбери близкое — или скажи своими словами. Слова, рождённые тобой, светят ярче.
+            Выбери близкое — или скажи своими словами. Слова, рождённые {a.toboj}, светят ярче.
           </p>
         </div>
 
@@ -249,7 +264,7 @@ function GoalScreen() {
           ) : (
             <GlassCard>
               <label className="block text-xs uppercase tracking-[0.25em] text-muted-foreground">
-                Твоя цель
+                {a.tvoya_cel}
               </label>
               <textarea
                 value={custom}

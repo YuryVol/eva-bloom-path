@@ -8,6 +8,7 @@ import { Slider010 } from "@/components/eva/Slider010";
 import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
 
 const HERO_SRC = "/assets/eva/step-07-current-state.png";
 const HERO_ALT =
@@ -27,6 +28,7 @@ function gapCopy(gap: number, desired: string) {
 }
 
 function CurrentStateScreen() {
+  const a = useAddress();
   const { state, journeyId, setStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
@@ -65,7 +67,7 @@ function CurrentStateScreen() {
         <div>
             <div className="text-center">
               <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                Где ты сейчас
+                {a.gde_ty}
               </p>
               <h1
                 className="mx-auto mt-2 max-w-[360px] font-display text-glow md:mt-4 md:max-w-none md:text-5xl"
@@ -75,10 +77,10 @@ function CurrentStateScreen() {
                   marginBottom: 12,
                 }}
               >
-                Насколько состояние «{desired}» ты ощущаешь сегодня?
+                Насколько состояние «{desired}» {a.ty} {a.oschuschajesh} сегодня?
               </h1>
               <p className="mx-auto max-w-[340px] text-[15px] leading-[1.35] text-muted-foreground md:mt-4 md:max-w-md md:text-sm md:leading-relaxed">
-                0 — совсем нет. 10 — это уже твоё состояние прямо сейчас.
+                0 — совсем нет. 10 — это уже {a.tvoyo} состояние прямо сейчас.
               </p>
             </div>
 

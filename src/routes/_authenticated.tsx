@@ -1,9 +1,11 @@
 import { createFileRoute, Navigate, Outlet, useLocation } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { AmbientBackground } from "@/components/eva/AmbientBackground";
 import { getOnboarding } from "@/lib/onboarding.functions";
+import { startSession, endSession } from "@/lib/analytics";
+import { AppConfigProvider } from "@/lib/app-config-context";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthGate,
@@ -23,6 +25,12 @@ function AuthGate() {
   const location = useLocation();
   const fetchOnboarding = useServerFn(getOnboarding);
   const [status, setStatus] = useState<"checking" | "ok" | "redirect">("checking");
+  const sessionIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    startSession().then((id) => { sessionIdRef.current = id; });
+    return () => { endSession(sessionIdRef.current); };
+  }, []);
 
   useEffect(() => {
     if (loading || !session) return;
@@ -34,7 +42,9 @@ function AuthGate() {
         setStatus(onboarding?.completed ? "ok" : "redirect");
       })
       .catch(() => {
-        if (!cancelled) setStatus("redirect");
+        // If the onboarding check fails (network/DB error), let the user through
+        // rather than looping them back to intro.
+        if (!cancelled) setStatus("ok");
       });
     return () => {
       cancelled = true;
@@ -47,5 +57,5 @@ function AuthGate() {
   if (status === "redirect" && !location.pathname.startsWith("/intro")) {
     return <Navigate to="/intro" />;
   }
-  return <Outlet />;
+  return <AppConfigProvider><Outlet /></AppConfigProvider>;
 }

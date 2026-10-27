@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVA — Free vs Premium</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  body{margin:0;padding:2rem;background:#FDFAF5;font-family:'Georgia',serif}
+  .slide{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+  .logo{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:#8a8580;margin-bottom:.5rem}
+  .tagline{font-size:28px;font-weight:500;color:#2c2a27;margin:0 0 2rem}
+  .cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid #e8e0d4;border-radius:12px;overflow:hidden}
+  .col-head{padding:1rem 1.25rem;border-bottom:1px solid #e8e0d4}
+  .col-head.free{background:#f5f0ea}
+  .col-head.premium{background:#FFF8ED;border-left:1px solid #e8e0d4;border-right:1px solid #e8e0d4}
+  .col-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8a8580;margin-bottom:4px}
+  .col-title{font-size:18px;font-weight:500;color:#2c2a27}
+  .badge{display:inline-block;font-size:11px;padding:2px 10px;border-radius:20px;margin-top:6px;background:#FDE68A;color:#92400E;font-family:sans-serif}
+  .feature-name{padding:.7rem 1.25rem;background:#fff;border-bottom:1px solid #e8e0d4;font-size:14px;color:#8a8580;display:flex;align-items:center;gap:8px;font-family:sans-serif}
+  .feature-name i{font-size:16px;color:#8a8580}
+  .cell{padding:.7rem 1.25rem;border-bottom:1px solid #e8e0d4;display:flex;align-items:center;font-size:14px;font-family:sans-serif}
+  .cell.free{background:#f5f0ea}
+  .cell.premium{background:#FFFDF5;border-left:1px solid #e8e0d4;border-right:1px solid #e8e0d4}
+  .yes{color:#059669;font-weight:500}
+  .no{color:#8a8580;opacity:.5}
+  .limit{color:#D97706;font-weight:500}
+  i.yes-i{color:#059669}
+  i.no-i{color:#8a8580;opacity:.4}
+  i.lim-i{color:#D97706}
+  .footer-cell{padding:1.25rem;background:#f5f0ea;font-size:13px;color:#8a8580;font-family:sans-serif}
+  .footer-cell.premium{background:#FFF8ED;border-left:1px solid #e8e0d4;border-right:1px solid #e8e0d4}
+  .cta-btn{display:inline-block;background:#F59E0B;color:#fff;border:none;border-radius:24px;padding:.6rem 1.5rem;font-size:14px;font-weight:500;cursor:pointer;font-family:sans-serif;margin-top:.75rem}
+  .price-main{color:#92400E;font-size:20px;font-weight:500}
+  .price-alt{color:#B45309;font-size:13px;margin-top:4px}
+  .price-save{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#D1FAE5;color:#065F46;margin-left:6px;font-family:sans-serif}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="logo">EVA</div>
+  <p class="tagline">Бесплатно vs Premium</p>
+  <div class="cols">
+    <div class="col-head" style="background:#f5f0ea"><div class="col-label">Возможность</div></div>
+    <div class="col-head free"><div class="col-label">Бесплатно</div><div class="col-title">Начать путь</div></div>
+    <div class="col-head premium"><div class="col-label">Premium</div><div class="col-title">Идти глубже</div><span class="badge">✦ Рекомендуем</span></div>
+
+    <div class="feature-name"><i class="ti ti-route" aria-hidden="true"></i> Путешествия по сферам</div>
+    <div class="cell free"><span class="limit"><i class="ti ti-clock lim-i" aria-hidden="true"></i> 1 в день</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-infinity yes-i" aria-hidden="true"></i> Без ограничений</span></div>
+
+    <div class="feature-name"><i class="ti ti-globe" aria-hidden="true"></i> 8 сфер жизни</div>
+    <div class="cell free"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Все доступны</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Все доступны</span></div>
+
+    <div class="feature-name"><i class="ti ti-sparkles" aria-hidden="true"></i> EMDR-практика</div>
+    <div class="cell free"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Есть</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Есть</span></div>
+
+    <div class="feature-name"><i class="ti ti-dumbbell" aria-hidden="true"></i> Расширенные практики</div>
+    <div class="cell free"><span class="no"><i class="ti ti-lock no-i" aria-hidden="true"></i> Закрыто</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Открыты</span></div>
+
+    <div class="feature-name"><i class="ti ti-book" aria-hidden="true"></i> Живой дневник пути</div>
+    <div class="cell free"><span class="no"><i class="ti ti-lock no-i" aria-hidden="true"></i> Недоступно</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Записи после каждого пути</span></div>
+
+    <div class="feature-name"><i class="ti ti-shield-star" aria-hidden="true"></i> Страж-хранитель</div>
+    <div class="cell free"><span class="no"><i class="ti ti-lock no-i" aria-hidden="true"></i> Недоступно</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Персональный</span></div>
+
+    <div class="feature-name"><i class="ti ti-world" aria-hidden="true"></i> Мир Евы</div>
+    <div class="cell free"><span class="no"><i class="ti ti-lock no-i" aria-hidden="true"></i> Недоступно</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Растёт с тобой</span></div>
+
+    <div class="feature-name"><i class="ti ti-star" aria-hidden="true"></i> Множитель XP</div>
+    <div class="cell free"><span class="no">×1</span></div>
+    <div class="cell premium"><span class="yes">×1.5 к каждому путешествию</span></div>
+
+    <div class="feature-name"><i class="ti ti-music" aria-hidden="true"></i> Фоновые звуки</div>
+    <div class="cell free"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Базовые</span></div>
+    <div class="cell premium"><span class="yes"><i class="ti ti-check yes-i" aria-hidden="true"></i> Полная библиотека</span></div>
+
+    <div class="footer-cell" style="background:#fff"></div>
+    <div class="footer-cell"><div style="color:#8a8580;font-size:13px">Бесплатно навсегда</div></div>
+    <div class="footer-cell premium">
+      <div class="price-main">1 990 ₽ / мес</div>
+      <div class="price-alt">или 9 990 ₽ / год <span class="price-save">−58%</span></div>
+      <button class="cta-btn">Попробовать Premium</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

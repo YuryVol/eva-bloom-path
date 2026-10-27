@@ -9,6 +9,7 @@ import { Slider010 } from "@/components/eva/Slider010";
 import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/_authenticated/journey/reassess")({
   component: ReassessScreen,
@@ -30,6 +31,7 @@ function diffCopy(improvement: number) {
 }
 
 function ReassessScreen() {
+  const a = useAddress();
   const { state, journeyId, setStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
@@ -85,10 +87,10 @@ function ReassessScreen() {
             Проверка
           </p>
           <h1 className="mt-2 font-display text-3xl text-glow md:mt-4 md:text-5xl">
-            Насколько сейчас тебе это легко?
+            {a.naskolko_legko}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:mt-4 md:mx-0 mx-auto">
-            Вспомни цель: «{state.desired_goal || "свою цель"}». Просто заметь, как
+            {a.vsomni} цель: «{state.desired_goal || "свою цель"}». Просто {a.zameti.toLowerCase()}, как
             ощущается сейчас — без попыток «угадать правильно».
           </p>
           <p className="mt-2 text-xs text-muted-foreground">

@@ -9,6 +9,7 @@ import { GlowButton } from "@/components/eva/GlowButton";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
 import { cn } from "@/lib/utils";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/_authenticated/journey/resistance-shape")({
   component: ResistanceShapeScreen,
@@ -41,7 +42,8 @@ const SIZES = [
 ];
 
 function ResistanceShapeScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
@@ -75,7 +77,7 @@ function ResistanceShapeScreen() {
       xp: next.xp,
       coins: next.coins,
     });
-    setStep("emdr");
+    pushStep("emdr");
     try {
       await save({
         data: { id: journeyId, state: next as never, current_step: "emdr" },
@@ -89,8 +91,12 @@ function ResistanceShapeScreen() {
 
   return (
     <FadeTransition k="resistance-shape">
-      <div className="h-full min-h-0 overflow-y-auto pr-1 pb-6">
-        <div className="mx-auto max-w-2xl text-center">
+      <div
+        className="h-full min-h-0 overflow-y-auto pr-1 pb-6 transition-colors duration-700"
+        style={selectedColor ? { backgroundColor: `${glow}14` } : undefined}
+      >
+        {/* Header */}
+        <div className="mb-6 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
             Форма
           </p>
@@ -98,11 +104,17 @@ function ResistanceShapeScreen() {
             Если бы у этого ощущения была форма — то какая?
           </h1>
           <p className="mt-3 mx-auto max-w-md text-sm leading-relaxed text-muted-foreground">
-            Иногда внутри живёт что-то тяжёлое — и оно пугает именно потому, что у него нет лица. Дай ему форму, цвет, размер. Когда мы видим — оно теряет власть.
+            Иногда внутри живёт что-то тяжёлое — и оно пугает именно потому, что у него нет лица. {a.daj} ему форму, цвет, размер. Когда мы видим — оно теряет власть.
           </p>
+        </div>
 
+        {/* Desktop 2-column: left = preview, right = selectors */}
+        <div className="md:grid md:grid-cols-[1fr_1.5fr] md:gap-10 md:items-start">
+
+          {/* LEFT — Preview stage (sticky on desktop) */}
+          <div className="md:sticky md:top-0">
           {/* Preview stage — frameless, centered radial glow */}
-          <div className="relative mx-auto mt-6 flex h-60 w-full max-w-sm items-center justify-center">
+          <div className="relative mx-auto mt-0 flex h-72 w-full max-w-sm items-center justify-center md:h-96 md:max-w-none">
             {/* Centered radial halo */}
             <div
               className="pointer-events-none absolute inset-0 transition-opacity duration-500"
@@ -178,9 +190,13 @@ function ResistanceShapeScreen() {
               </AnimatePresence>
             </div>
           </div>
+          </div>{/* end left column */}
+
+          {/* RIGHT — Selectors */}
+          <div>
 
           {/* Shape */}
-          <div className="mt-8">
+          <div className="mt-8 md:mt-0">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
               Форма
             </p>
@@ -255,7 +271,9 @@ function ResistanceShapeScreen() {
               {ready ? "+5 XP · +2 монеты за смелость назвать" : "Выбери форму, цвет и размер"}
             </p>
           </div>
-        </div>
+
+          </div>{/* end right column */}
+        </div>{/* end 2-col grid */}
       </div>
     </FadeTransition>
   );

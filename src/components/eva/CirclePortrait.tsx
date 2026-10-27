@@ -127,8 +127,7 @@ function SceneCard({
   current: GoalVisual;
   all: GoalVisual[];
 }) {
-  const maskImage =
-    "radial-gradient(circle at center, black 72%, transparent 100%)";
+  const maskImage = undefined;
   return (
     <div
       className="relative mx-auto mb-4 aspect-[4/5] w-[min(220px,50vw)] shrink-0 overflow-hidden max-lg:w-[min(200px,46vw)] max-md:mb-3 max-md:w-[min(170px,42vw)]"

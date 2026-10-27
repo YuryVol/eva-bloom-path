@@ -1,13 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
 import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
-import { SPHERES, type SphereId } from "@/lib/journey-types";
+import {
+  SPHERES,
+  VARIANT_META,
+  VARIANT_STEPS,
+  getRecommendedVariant,
+  type JourneyVariant,
+  type SphereId,
+} from "@/lib/journey-types";
+import { useAddress } from "@/lib/use-address";
 
 export const Route = createFileRoute("/_authenticated/journey/path")({
   component: PathScreen,
@@ -61,7 +69,14 @@ const sphereCopy: Record<SphereId, { whisper: string; invite: string }> = {
   },
 };
 
+const VARIANT_ORDER: JourneyVariant[] = [
+  "deep", "somatic", "creative", "quick",
+  "narrative", "meditative", "dialogue",
+  "gratitude", "polarity", "fear-lens",
+];
+
 function PathScreen() {
+  const a = useAddress();
   const { state, journeyId, setStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
@@ -74,6 +89,18 @@ function PathScreen() {
   const priority =
     (state.priority_sphere as SphereId) ||
     (state.selected_spheres[0] as SphereId | undefined);
+
+  const score = priority ? state.sphere_scores[priority] : undefined;
+
+  const recommended = useMemo(
+    () => getRecommendedVariant(score, null, 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [priority],
+  );
+
+  const [selected, setSelected] = useState<JourneyVariant>(
+    state.journey_variant ?? recommended,
+  );
 
   if (!priority) {
     return (
@@ -91,16 +118,16 @@ function PathScreen() {
   }
 
   const copy = sphereCopy[priority];
-  const score = state.sphere_scores[priority];
   const heroSrc = sphereImages[priority] || DEFAULT_HERO;
 
   const handleNext = async () => {
     if (!journeyId) return;
-    const next = { ...state, priority_sphere: priority };
-    patch({ priority_sphere: priority });
-    setStep("goal");
-    await save({ data: { id: journeyId, state: next as never, current_step: "goal" } });
-    navigate({ to: "/journey/goal" as never });
+    const firstStep = VARIANT_STEPS[selected][0] as string;
+    const next = { ...state, priority_sphere: priority, journey_variant: selected };
+    patch({ priority_sphere: priority, journey_variant: selected });
+    setStep(firstStep as never);
+    save({ data: { id: journeyId, state: next as never, current_step: firstStep } }).catch(() => {});
+    navigate({ to: `/journey/${firstStep}` as never });
   };
 
   return (
@@ -110,7 +137,7 @@ function PathScreen() {
       >
         <div className="text-center md:text-left">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-            Твой путь сегодня
+            {a.tvoy_put}
           </p>
           <h1 className="mt-3 font-display text-4xl text-glow md:text-5xl">
             {labelOf[priority]}
@@ -120,11 +147,12 @@ function PathScreen() {
           </p>
           <p className="mt-2 max-w-md text-xs leading-relaxed text-muted-foreground/70 italic md:mx-0 mx-auto">
             {typeof score === "number" && score < 7
-              ? "Здесь сейчас труднее всего — поэтому Ева идёт сюда с тобой."
-              : "Ты выбрала эту сферу — Ева идёт туда, куда зовёт сердце."}
+              ? `Здесь сейчас труднее всего — поэтому Ева идёт сюда с ${a.toboj}.`
+              : `${a.ty_vybrala} эту сферу — Ева идёт туда, куда зовёт сердце.`}
           </p>
         </div>
 
+        {/* Quote card */}
         <div className="mt-5">
           <GlassCard className="text-center">
             <p className="font-display text-lg italic text-foreground/90">
@@ -133,17 +161,55 @@ function PathScreen() {
             {typeof score === "number" && (
               <div className="mt-4 flex items-center justify-center gap-3 text-xs uppercase tracking-[0.25em] text-muted-foreground">
                 <span>сейчас</span>
-                <span className="font-display text-3xl not-italic text-foreground">
-                  {score}
-                </span>
+                <span className="font-display text-3xl not-italic text-foreground">{score}</span>
                 <span>/ 10</span>
               </div>
             )}
           </GlassCard>
         </div>
 
-        <div className="mt-5 flex flex-col items-center gap-3 text-center md:items-start md:text-left">
-          <GlowButton onClick={handleNext}>Идти в эту сферу</GlowButton>
+        {/* Variant selection */}
+        <div className="mt-6">
+          <p className="mb-3 text-xs uppercase tracking-[0.25em] text-muted-foreground text-center md:text-left">
+            Как {a.ty_khochesh_rabotat} сегодня?
+          </p>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
+            {VARIANT_ORDER.map((v) => {
+              const meta = VARIANT_META[v];
+              const isSelected = selected === v;
+              const isRecommended = v === recommended;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setSelected(v)}
+                  className={[
+                    "relative flex flex-col items-center gap-1.5 rounded-2xl border px-3 py-3 text-center transition-all",
+                    isSelected
+                      ? "border-primary/60 bg-primary/10 shadow-[0_0_12px_rgba(255,220,140,0.25)]"
+                      : "border-border/50 bg-card/40 hover:border-primary/30 hover:bg-card/70",
+                  ].join(" ")}
+                >
+                  {isRecommended && !isSelected && (
+                    <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-medium text-background leading-none">
+                      Ева
+                    </span>
+                  )}
+                  <span className="text-2xl leading-none">{meta.icon}</span>
+                  <span className="text-[11px] font-medium leading-tight text-foreground">
+                    {meta.label}
+                  </span>
+                  <span className="text-[10px] leading-tight text-muted-foreground">
+                    {meta.tagline}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-2 md:items-start">
+          <GlowButton onClick={handleNext}>Начать путь</GlowButton>
         </div>
       </JourneyScene>
     </FadeTransition>

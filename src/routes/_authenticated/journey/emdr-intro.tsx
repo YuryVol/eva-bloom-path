@@ -9,20 +9,21 @@ import { GlowButton } from "@/components/eva/GlowButton";
 import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
+import { useAmbientTrack } from "@/lib/use-ambient-track";
 
 export const Route = createFileRoute("/_authenticated/journey/emdr-intro")({
   component: EmdrIntroScreen,
 });
 
-const HERO_SRC = "/assets/eva/step-09-emdr-intro.png";
-const HERO_ALT = "Ева стоит у тихого светящегося пространства";
+const HERO_SRC = "/assets/eva/eva-emdr-pose.png";
+const HERO_ALT = "Ева в подготовительной позе для EMDR";
 
 const CONTRAINDICATIONS = [
-  "активные психозы (шизофрения, бредовые расстройства)",
-  "эпилепсия (в стадии нестабильности)",
-  "острые суицидальные состояния",
-  "тяжёлые когнитивные нарушения",
-  "неспособность удерживать внимание",
+  "психотические состояния или обострения",
+  "эпилепсия в период нестабильности",
+  "острый кризис или мысли о самоповреждении",
+  "выраженные сложности с концентрацией внимания",
 ];
 
 function ContraindicationsAccordion() {
@@ -34,7 +35,7 @@ function ContraindicationsAccordion() {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-3 rounded-2xl border border-border/50 bg-card/50 px-4 py-3 text-left transition hover:bg-card/70"
       >
-        <span className="text-xs text-muted-foreground">Противопоказания к практике</span>
+        <span className="text-xs text-muted-foreground">Когда лучше пропустить этот шаг</span>
         <ChevronDown
           className={`size-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`}
         />
@@ -65,6 +66,8 @@ function ContraindicationsAccordion() {
 }
 
 function EmdrIntroScreen() {
+  useAmbientTrack("bowls");
+  const a = useAddress();
   const { state, journeyId, setStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
@@ -113,16 +116,20 @@ function EmdrIntroScreen() {
           </p>
         </div>
 
-        <div className="mt-5 md:mt-7">
+        <p className="mt-4 text-center text-xs italic text-muted-foreground/70">
+          Сотни женщин сделали этот шаг — и стали спокойнее.
+        </p>
+
+        <div className="mt-3 md:mt-5">
           <GlassCard>
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-4">
-              Что тебя ждёт
+              {a.tebya_zhdet}
             </p>
             <ul className="flex flex-col gap-3">
               {[
-                "Следи глазами за движущейся точкой — голова остаётся неподвижной",
-                "Удерживай в уме образ, который ты нашла на прошлом шаге",
-                "Дыши спокойно — тело само знает, что делать",
+                `${a.sledi} глазами за движущейся точкой — голова остаётся неподвижной`,
+                `${a.uderzhivaj} в уме образ, который ${a.nashla} на прошлом шаге`,
+                `${a.dyshe} спокойно — тело само знает, что делать`,
               ].map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-primary/40 font-display text-xs text-primary/80 mt-0.5">
@@ -135,6 +142,17 @@ function EmdrIntroScreen() {
           </GlassCard>
         </div>
 
+        <details className="mt-4 rounded-2xl border border-border/30 bg-card/60 px-4 py-3">
+          <summary className="cursor-pointer text-xs font-medium text-primary/80 hover:text-primary">
+            Почему это работает?
+          </summary>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            EMDR (десенсибилизация движениями глаз) — метод, рекомендованный ВОЗ для работы со стрессом и тревогой.
+            Движения глаз за объектом активируют процессы переработки эмоциональных переживаний.
+            Исследования показывают снижение тревожности уже после 1–3 сессий.
+          </p>
+        </details>
+
         <div className="mt-4">
           <ContraindicationsAccordion />
         </div>
@@ -143,11 +161,14 @@ function EmdrIntroScreen() {
           <GlowButton onClick={handleStart}>
             Я готова
           </GlowButton>
+          <p className="text-center text-xs text-muted-foreground/50">
+            Сомневаешься — смело нажми «Пропустить», это нормально.
+          </p>
           <button
             type="button"
             onClick={handleSkip}
             disabled={saving}
-            className="text-xs tracking-wide text-muted-foreground/60 underline-offset-2 transition-colors hover:text-muted-foreground hover:underline disabled:opacity-40"
+            className="text-xs tracking-wide text-muted-foreground/70 underline underline-offset-2 transition-colors hover:text-muted-foreground disabled:opacity-40"
           >
             Пропустить практику
           </button>

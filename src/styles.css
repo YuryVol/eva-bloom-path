@@ -50,59 +50,77 @@
 :root {
   --radius: 1.25rem;
 
-  /* Warm parchment base */
+  /* Hex fallbacks for browsers without oklch support */
+  --background: #F5EFE6;
+  --foreground: #4A3F35;
+  --card: #FBF8F3;
+  --card-foreground: #4A3F35;
+  --popover: #FBF8F3;
+  --popover-foreground: #4A3F35;
+  --primary: #C4944A;
+  --primary-foreground: #2E2518;
+  --secondary: #9B7FC7;
+  --secondary-foreground: #3D2F55;
+  --muted: #EDE8DF;
+  --muted-foreground: #7A6E60;
+  --accent: #8FAF8A;
+  --accent-foreground: #2A3F28;
+  --destructive: #D96B5A;
+  --destructive-foreground: #FDF5F0;
+  --border: rgba(120, 95, 60, 0.18);
+  --input: rgba(120, 95, 60, 0.15);
+  --ring: rgba(196, 148, 74, 0.6);
+  --aurora: #C4944A;
+  --ember: #8FAF8A;
+  --shadow-tone: #7A6B9B;
+  --relief: #9B7FC7;
+  --peach: #E8A07A;
+  --peach-foreground: #3D2A20;
+  --mist: #C5D8E8;
+  --mist-foreground: #3A4F5E;
+  --coral: #D96B5A;
+  --coral-foreground: #FDF5F0;
+  --glow-soft: 0 8px 28px rgba(196, 148, 74, 0.18);
+  --glow-intense: 0 16px 50px rgba(196, 148, 74, 0.28), 0 0 20px rgba(196, 148, 74, 0.25);
+  --glow-ember: 0 8px 30px rgba(143, 175, 138, 0.3);
+  --glow-shadow: 0 8px 30px rgba(122, 107, 155, 0.3);
+}
+
+@supports (color: oklch(0 0 0)) {
+:root {
   --background: oklch(0.96 0.018 85);
   --foreground: oklch(0.32 0.025 60);
-
-  /* Cream cards with soft warmth */
   --card: oklch(0.985 0.012 80 / 0.85);
   --card-foreground: oklch(0.32 0.025 60);
   --popover: oklch(0.985 0.012 80);
   --popover-foreground: oklch(0.32 0.025 60);
-
-  /* Candle gold — main accent / CTA */
   --primary: oklch(0.74 0.13 70);
   --primary-foreground: oklch(0.22 0.02 50);
-
-  /* Dusty lavender — secondary (deepened for readability, ≈ #9B7FC7) */
   --secondary: oklch(0.7 0.11 295);
   --secondary-foreground: oklch(0.3 0.04 290);
-
   --muted: oklch(0.92 0.015 80);
   --muted-foreground: oklch(0.5 0.025 70);
-
-  /* Sage green — accent for rewards/relief (deepened ≈ #8FAF8A) */
   --accent: oklch(0.72 0.06 145);
   --accent-foreground: oklch(0.25 0.04 150);
-
-  /* Warm coral — for "shadow"/warning tones (≈ #D96B5A), replaces cold blue */
   --destructive: oklch(0.65 0.16 30);
   --destructive-foreground: oklch(0.98 0.005 80);
-
   --border: oklch(0.55 0.04 60 / 0.18);
   --input: oklch(0.55 0.04 60 / 0.15);
   --ring: oklch(0.74 0.13 70 / 0.6);
-
-  /* Custom tokens */
-  --aurora: oklch(0.74 0.13 70);     /* candle gold */
-  --ember: oklch(0.72 0.06 145);     /* sage */
-  --shadow-tone: oklch(0.55 0.05 295); /* muted lavender (was cold blue) */
-  --relief: oklch(0.7 0.11 295);     /* dusty lavender */
-
-  /* New therapeutic accents */
-  --peach: oklch(0.78 0.1 50);       /* ≈ #E8A07A — warm terracotta-peach */
+  --aurora: oklch(0.74 0.13 70);
+  --ember: oklch(0.72 0.06 145);
+  --shadow-tone: oklch(0.55 0.05 295);
+  --relief: oklch(0.7 0.11 295);
+  --peach: oklch(0.78 0.1 50);
   --peach-foreground: oklch(0.28 0.05 40);
-  --mist: oklch(0.88 0.04 240);      /* ≈ #C5D8E8 — misty soft blue */
+  --mist: oklch(0.88 0.04 240);
   --mist-foreground: oklch(0.35 0.03 240);
-  --coral: oklch(0.65 0.16 30);      /* ≈ #D96B5A — warning coral */
+  --coral: oklch(0.65 0.16 30);
   --coral-foreground: oklch(0.98 0.005 80);
-
   --glow-soft: 0 8px 28px oklch(0.74 0.13 70 / 0.18);
   --glow-intense: 0 16px 50px oklch(0.74 0.13 70 / 0.28), 0 0 20px oklch(0.74 0.13 70 / 0.25);
   --glow-ember: 0 8px 30px oklch(0.72 0.06 145 / 0.3);
   --glow-shadow: 0 8px 30px oklch(0.55 0.05 295 / 0.3);
-
-  /* Soft therapeutic gradients — warm, candlelit, miniature-world feel */
   --gradient-aurora: radial-gradient(circle at 20% 20%, oklch(0.92 0.06 70 / 0.7), transparent 60%),
     radial-gradient(circle at 80% 70%, oklch(0.86 0.05 290 / 0.55), transparent 55%),
     linear-gradient(180deg, oklch(0.97 0.02 85), oklch(0.94 0.025 70));
@@ -114,9 +132,9 @@
     linear-gradient(180deg, oklch(0.96 0.018 80), oklch(0.93 0.03 290));
   --gradient-light: radial-gradient(circle at 50% 30%, oklch(0.92 0.1 80 / 0.55), transparent 60%),
     linear-gradient(180deg, oklch(0.97 0.025 85), oklch(0.94 0.04 70));
-
   --shadow-eva: 0 30px 60px -25px oklch(0.45 0.05 60 / 0.25);
   --shadow-card: 0 1px 2px oklch(0.45 0.05 60 / 0.06), 0 10px 30px -12px oklch(0.45 0.05 60 / 0.18);
+}
 }
 
 .dark {
@@ -210,7 +228,7 @@
   align-items: center;
 }
 .step-10-content {
-  width: min(760px, 100%);
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;

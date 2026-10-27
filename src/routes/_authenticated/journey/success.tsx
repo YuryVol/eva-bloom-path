@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useInterlude } from "@/lib/eva-interlude";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAddress } from "@/lib/use-address";
 import { GlassCard } from "@/components/eva/GlassCard";
 import { FadeTransition } from "@/components/eva/FadeTransition";
 import { GlowButton } from "@/components/eva/GlowButton";
@@ -9,10 +10,26 @@ import { JourneyScene } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
 import { cn } from "@/lib/utils";
+import { checkPremiumStatus } from "@/lib/premium.functions";
+import { PremiumCTA } from "@/components/premium/PremiumCTA";
 
 export const Route = createFileRoute("/_authenticated/journey/success")({
   component: SuccessStepScreen,
 });
+
+function getRoleNote(roles: string[]): string | null {
+  if (roles.includes("В декрете") || roles.includes("Забочусь о семье"))
+    return "Заботиться о других и не забывать о себе — это тоже работа.";
+  if (roles.includes("Работаю"))
+    return "Среди дел и дедлайнов найти минуту для себя — это уже немало.";
+  if (roles.includes("Учусь"))
+    return "Внутренняя работа не менее важна, чем любой экзамен.";
+  if (roles.includes("Ищу себя"))
+    return "Искать — значит уже двигаться. Это уже путь.";
+  if (roles.includes("Сейчас отдыхаю / восстанавливаюсь"))
+    return "Восстановление требует смелости. Ты здесь — и это важно.";
+  return null;
+}
 
 const WINDOWS = [
   { id: "today", label: "Сегодня", hint: "в ближайшие часы" },
@@ -25,9 +42,16 @@ const HERO_ALT =
   "Ева стоит на светящемся первом камне дорожки, рядом блокнот, свеча и молодой росток";
 
 function SuccessStepScreen() {
+  const a = useAddress();
   const { state, journeyId, setStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
+  const fetchPremium = useServerFn(checkPremiumStatus);
+  const [isPremium, setIsPremium] = useState(false);
+
+  useEffect(() => {
+    fetchPremium().then(({ isPremium: p }) => setIsPremium(p)).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [stepText, setStepText] = useState("");
   const [window, setWindow] = useState<string>("today");
@@ -35,6 +59,7 @@ function SuccessStepScreen() {
 
   const ready = stepText.trim().length >= 3 && Boolean(window);
   const goal = state.desired_goal || "своей цели";
+  const roleNote = getRoleNote(state.user_roles ?? []);
 
   const handleNext = async () => {
     if (!journeyId || !ready) return;
@@ -43,9 +68,10 @@ function SuccessStepScreen() {
     const next = {
       ...state,
       first_step: firstStep,
+      first_step_window: window,
       xp: (state.xp || 0) + 10,
       coins: (state.coins || 0) + 5,
-    } as typeof state & { first_step: string };
+    } as typeof state & { first_step: string; first_step_window: string };
     patch({ xp: next.xp, coins: next.coins } as never);
     setStep("summary");
     try {
@@ -53,6 +79,20 @@ function SuccessStepScreen() {
         data: { id: journeyId, state: next as never, current_step: "summary" },
       });
       await useInterlude.getState().play("success-to-summary", 6000);
+      navigate({ to: "/journey/summary" as never });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSkip = async () => {
+    if (!journeyId || saving) return;
+    setSaving(true);
+    setStep("summary");
+    try {
+      await save({
+        data: { id: journeyId, state: state as never, current_step: "summary" },
+      });
       navigate({ to: "/journey/summary" as never });
     } finally {
       setSaving(false);
@@ -73,6 +113,11 @@ function SuccessStepScreen() {
             К цели «{goal}». Один маленький, конкретный шаг — такой,
             к которому невозможно придумать отговорку.
           </p>
+          {roleNote && (
+            <p className="mt-2 max-w-md text-sm italic leading-relaxed text-muted-foreground/60 md:mx-0 mx-auto">
+              {roleNote}
+            </p>
+          )}
         </div>
 
         <div className="mt-5 md:mt-8">
@@ -113,10 +158,15 @@ function SuccessStepScreen() {
           </div>
         </div>
 
+        {/* Premium CTA — между выбором "Когда" и обетом */}
+        {!isPremium && (
+          <PremiumCTA format="c" context="route_complete" className="mt-5" />
+        )}
+
         <div
           className={cn(
-            "mt-6 transition-opacity duration-500",
-            ready ? "opacity-100" : "opacity-0",
+            "transition-all duration-500 overflow-hidden",
+            ready ? "mt-6 opacity-100 max-h-40" : "opacity-0 max-h-0 mt-0",
           )}
         >
           <GlassCard className="border-primary/40">
@@ -136,6 +186,14 @@ function SuccessStepScreen() {
           <p className="text-xs text-muted-foreground">
             +10 XP · +5 монет за конкретное действие
           </p>
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={saving}
+            className="mt-1 text-xs text-muted-foreground/50 underline-offset-2 transition-colors hover:text-muted-foreground hover:underline disabled:opacity-40"
+          >
+            не сегодня
+          </button>
         </div>
       </JourneyScene>
     </FadeTransition>

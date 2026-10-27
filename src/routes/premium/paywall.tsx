@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { motion, AnimatePresence } from "framer-motion";
 import { activatePremiumMock } from "@/lib/premium.functions";
+import { getAppConfig } from "@/lib/app-config";
 import { AmbientBackground } from "@/components/eva/AmbientBackground";
 
 export const Route = createFileRoute("/premium/paywall")({
@@ -13,16 +14,16 @@ const PLANS = [
   {
     id: "monthly",
     label: "Месяц",
-    price: "990 ₽",
+    price: "1 990 ₽",
     sub: "в месяц",
     badge: null,
   },
   {
     id: "annual",
     label: "Год",
-    price: "5 990 ₽",
-    sub: "499 ₽ в месяц",
-    badge: "Экономия 40%",
+    price: "9 990 ₽",
+    sub: "832 ₽ в месяц",
+    badge: "Экономия 58%",
   },
 ];
 
@@ -33,7 +34,7 @@ const PERKS = [
   { icon: "🌍", text: "30 состояний Мира Евы" },
   { icon: "🔮", text: "Хранители сфер — твои проводники" },
   { icon: "⭐", text: "XP и монеты ×1.5" },
-  { icon: "🤝", text: "Premium-скидки у партнёров" },
+  { icon: "🤝", text: "Скидки у партнёров EVA+" },
 ];
 
 function Confetti() {
@@ -57,9 +58,16 @@ function Confetti() {
 function PaywallPage() {
   const navigate = useNavigate();
   const activate = useServerFn(activatePremiumMock);
+  const fetchAppConfig = useServerFn(getAppConfig);
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "annual">("annual");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    fetchAppConfig()
+      .then((cfg) => { if (!cfg.isPremiumApp) navigate({ to: "/home" as never }); })
+      .catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleActivate = async () => {
     setLoading(true);
@@ -82,7 +90,7 @@ function PaywallPage() {
             className="text-center max-w-sm"
           >
             <div className="text-6xl mb-4">✨</div>
-            <h2 className="font-display text-2xl font-semibold mb-3">Добро пожаловать в Premium</h2>
+            <h2 className="font-display text-2xl font-semibold mb-3">Добро пожаловать в EVA+</h2>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Ева рада видеть тебя здесь. Твой мир стал богаче — начни новое путешествие.
             </p>
@@ -97,7 +105,7 @@ function PaywallPage() {
             {/* Header */}
             <div className="text-center mb-6">
               <span className="text-5xl">✨</span>
-              <h1 className="mt-3 font-display text-2xl font-semibold">EVA Premium</h1>
+              <h1 className="mt-3 font-display text-2xl font-semibold">EVA+</h1>
               <p className="mt-1.5 text-sm text-muted-foreground">Полный доступ к твоему пути</p>
             </div>
 
@@ -144,7 +152,7 @@ function PaywallPage() {
               disabled={loading}
               className="w-full rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 py-4 text-sm font-semibold text-white shadow-lg shadow-amber-400/30 transition hover:from-amber-500 hover:to-amber-600 disabled:opacity-60"
             >
-              {loading ? "Активация…" : "Оформить Premium"}
+              {loading ? "Активация…" : "Оформить EVA+"}
             </button>
             <p className="mt-3 text-center text-[11px] text-muted-foreground">
               Демо-версия · Реальная оплата не производится

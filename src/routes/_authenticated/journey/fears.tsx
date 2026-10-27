@@ -7,25 +7,32 @@ import { GlowButton } from "@/components/eva/GlowButton";
 import { JourneyScene, type SceneVisual } from "@/components/eva/JourneyScene";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
 import { type SphereId } from "@/lib/journey-types";
+import { getNextStep } from "@/lib/sphere-journeys";
 
 export const Route = createFileRoute("/_authenticated/journey/fears")({
   component: FearsScreen,
 });
 
-const UNIVERSAL_FEARS = [
+const UNIVERSAL_FEARS_SELF = [
   "Что не получится",
-  "Что осудят",
   "Что будет больно",
-  "Что разочарую близких",
   "Что снова не хватит сил",
-  "Что придётся менять слишком много",
-  "Что окажусь одна",
   "Что это не моё",
   "Что мои желания — это эгоизм",
-  "Что если займусь собой — всё рухнет",
   "Что это очередная попытка, которая ни к чему не приведёт",
 ];
+
+const UNIVERSAL_FEARS_WORLD = [
+  "Что осудят",
+  "Что разочарую близких",
+  "Что придётся менять слишком много",
+  "Что окажусь одна",
+  "Что если займусь собой — всё рухнет",
+];
+
+const UNIVERSAL_FEARS = [...UNIVERSAL_FEARS_SELF, ...UNIVERSAL_FEARS_WORLD];
 
 const SPHERE_FEARS: Partial<Record<SphereId, string[]>> = {
   relationships: [
@@ -128,28 +135,110 @@ const FEAR_VISUALS: Record<string, SceneVisual> = {
 
 const MAX_PICK = 3;
 
+function FearChip({
+  f,
+  active,
+  disabled,
+  onToggle,
+  onHover,
+  onLeave,
+}: {
+  f: string;
+  active: boolean;
+  disabled: boolean;
+  onToggle: () => void;
+  onHover: () => void;
+  onLeave: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      disabled={disabled}
+      className={`rounded-2xl border px-4 py-3 text-left backdrop-blur-sm transition ${
+        active
+          ? "border-destructive/60 bg-destructive/10 text-foreground shadow-[0_6px_18px_-10px_oklch(0.65_0.16_30/0.5)]"
+          : disabled
+            ? "cursor-not-allowed border-border/40 bg-muted/40 text-muted-foreground/50"
+            : "border-border bg-card text-foreground/90 hover:border-destructive/40"
+      }`}
+    >
+      <span className="font-display text-base">{f}</span>
+    </button>
+  );
+}
+
+function FearGroup({
+  label,
+  fears,
+  selected,
+  onToggle,
+  onHover,
+  onLeave,
+}: {
+  label: string;
+  fears: string[];
+  selected: string[];
+  onToggle: (f: string) => void;
+  onHover: (f: string) => void;
+  onLeave: () => void;
+}) {
+  if (fears.length === 0) return null;
+  return (
+    <div>
+      <p className="mb-2 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+        {label}
+      </p>
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+        {fears.map((f) => (
+          <FearChip
+            key={f}
+            f={f}
+            active={selected.includes(f)}
+            disabled={!selected.includes(f) && selected.length >= MAX_PICK}
+            onToggle={() => onToggle(f)}
+            onHover={() => onHover(f)}
+            onLeave={onLeave}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FearsScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
   const [selected, setSelected] = useState<string[]>(state.selected_fears || []);
   const [custom, setCustom] = useState("");
   const [saving, setSaving] = useState(false);
+  const [hoveredFear, setHoveredFear] = useState<string | null>(null);
 
   const sphere = (state.priority_sphere || state.selected_spheres[0]) as SphereId | undefined;
   const sphereFears = sphere ? (SPHERE_FEARS[sphere] ?? []) : [];
-  const FEAR_OPTIONS = useMemo(() => {
+
+  const { groupSelf, groupWorld } = useMemo(() => {
     const sphereSpecific = sphereFears.filter((f) => !UNIVERSAL_FEARS.includes(f));
-    return [...sphereSpecific, ...UNIVERSAL_FEARS];
+    return {
+      groupSelf: [...sphereSpecific, ...UNIVERSAL_FEARS_SELF],
+      groupWorld: UNIVERSAL_FEARS_WORLD,
+    };
   }, [sphere]);
 
+  const allFearOptions = useMemo(() => [...groupSelf, ...groupWorld], [groupSelf, groupWorld]);
+
   const activeFearKey = useMemo(() => {
+    if (hoveredFear && FEAR_VISUALS[hoveredFear]) return hoveredFear;
     for (let i = selected.length - 1; i >= 0; i--) {
       if (FEAR_VISUALS[selected[i]]) return selected[i];
     }
     return "default";
-  }, [selected]);
+  }, [hoveredFear, selected]);
 
   const currentFearVisual = FEAR_VISUALS[activeFearKey] || FEAR_VISUALS.default;
   const allVisuals = Object.values(FEAR_VISUALS);
@@ -183,12 +272,15 @@ function FearsScreen() {
       xp: (state.xp || 0) + xpGain,
     };
     patch({ selected_fears: selected, xp: next.xp });
-    setStep("feeling");
-    navigate({ to: "/journey/feeling" as never });
-    save({ data: { id: journeyId, state: next as never, current_step: "feeling" } })
+    const nextStep = getNextStep(state.priority_sphere as SphereId, "fears", next);
+    pushStep(nextStep);
+    navigate({ to: `/journey/${nextStep}` as never });
+    save({ data: { id: journeyId, state: next as never, current_step: nextStep } })
       .catch(() => {})
       .finally(() => setSaving(false));
   };
+
+  const customFears = selected.filter((f) => !allFearOptions.includes(f));
 
   return (
     <FadeTransition k="fears">
@@ -198,37 +290,14 @@ function FearsScreen() {
             Тени на пути
           </p>
           <h1 className="mt-4 font-display text-3xl text-glow md:text-4xl">
-            Что встаёт между тобой и этим?
+            Что встаёт между {a.toboj} и этим?
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:mx-0 mx-auto">
-            Назови до {MAX_PICK} страхов. Их сила слабеет, когда мы зовём их по имени.
+            {a.nazovi} до {MAX_PICK} страхов. Их сила слабеет, когда мы зовём их по имени.
           </p>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {FEAR_OPTIONS.map((f) => {
-            const active = selected.includes(f);
-            const disabled = !active && selected.length >= MAX_PICK;
-            return (
-              <button
-                key={f}
-                type="button"
-                onClick={() => toggle(f)}
-                disabled={disabled}
-                className={`rounded-2xl border px-4 py-3 text-left backdrop-blur-sm transition ${
-                  active
-                    ? "border-destructive/60 bg-destructive/10 text-foreground shadow-[0_6px_18px_-10px_oklch(0.65_0.16_30/0.5)]"
-                    : disabled
-                      ? "cursor-not-allowed border-border/40 bg-muted/40 text-muted-foreground/50"
-                      : "border-border bg-card text-foreground/90 hover:border-destructive/40"
-                }`}
-              >
-                <span className="font-display text-base">{f}</span>
-              </button>
-            );
-          })}
-        </div>
-
+        {/* Свой страх — сразу под описанием */}
         <div className="mt-5">
           <GlassCard>
             <label className="block text-xs uppercase tracking-[0.25em] text-muted-foreground">
@@ -258,28 +327,47 @@ function FearsScreen() {
                 Добавить
               </button>
             </div>
-            {selected.filter((f) => !FEAR_OPTIONS.includes(f)).length > 0 && (
+            {customFears.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {selected
-                  .filter((f) => !FEAR_OPTIONS.includes(f))
-                  .map((f) => (
-                    <button
-                      key={f}
-                      type="button"
-                      onClick={() => toggle(f)}
-                      className="rounded-full border border-destructive/50 bg-destructive/10 px-3 py-1 text-xs text-foreground hover:bg-destructive/20"
-                    >
-                      {f} ×
-                    </button>
-                  ))}
+                {customFears.map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => toggle(f)}
+                    className="rounded-full border border-destructive/50 bg-destructive/10 px-3 py-1 text-xs text-foreground hover:bg-destructive/20"
+                  >
+                    {f} ×
+                  </button>
+                ))}
               </div>
             )}
             <p className="mt-2 text-xs text-muted-foreground">+6 XP за свой страх</p>
           </GlassCard>
         </div>
 
-        <div className="mt-6 flex flex-col items-center gap-2 md:items-start">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        {/* Сетка страхов по категориям */}
+        <div className="mt-5 space-y-5 pb-20">
+          <FearGroup
+            label="Про себя"
+            fears={groupSelf}
+            selected={selected}
+            onToggle={toggle}
+            onHover={setHoveredFear}
+            onLeave={() => setHoveredFear(null)}
+          />
+          <FearGroup
+            label="Про других и мир"
+            fears={groupWorld}
+            selected={selected}
+            onToggle={toggle}
+            onHover={setHoveredFear}
+            onLeave={() => setHoveredFear(null)}
+          />
+        </div>
+
+        {/* Sticky footer: счётчик + кнопка */}
+        <div className="sticky bottom-0 -mx-1 flex items-center justify-between gap-4 bg-background/80 py-4 backdrop-blur-sm md:flex-row md:justify-between">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
             выбрано {selected.length} / {MAX_PICK}
           </p>
           <GlowButton onClick={handleNext} disabled={!canNext}>

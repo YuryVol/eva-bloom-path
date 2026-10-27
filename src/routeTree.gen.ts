@@ -24,16 +24,19 @@ import { Route as AboutYouRouteImport } from './routes/about-you'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PremiumPaywallRouteImport } from './routes/premium/paywall'
+import { Route as PremiumGuardianCreatorRouteImport } from './routes/premium/guardian-creator'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminPartnersRouteImport } from './routes/admin/partners'
 import { Route as AdminOverviewRouteImport } from './routes/admin/overview'
 import { Route as AdminFunnelRouteImport } from './routes/admin/funnel'
+import { Route as AdminCtaRouteImport } from './routes/admin/cta'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPracticesRouteImport } from './routes/_authenticated/practices'
 import { Route as AuthenticatedOpportunitiesRouteImport } from './routes/_authenticated/opportunities'
 import { Route as AuthenticatedJourneyRouteImport } from './routes/_authenticated/journey'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
+import { Route as AuthenticatedDiaryRouteImport } from './routes/_authenticated/diary'
 import { Route as AuthenticatedJourneyIndexRouteImport } from './routes/_authenticated/journey/index'
 import { Route as AuthenticatedPracticesPracticeIdRouteImport } from './routes/_authenticated/practices_/$practiceId'
 import { Route as AuthenticatedPartnersPsychologistRouteImport } from './routes/_authenticated/partners/psychologist'
@@ -148,6 +151,11 @@ const PremiumPaywallRoute = PremiumPaywallRouteImport.update({
   path: '/premium/paywall',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PremiumGuardianCreatorRoute = PremiumGuardianCreatorRouteImport.update({
+  id: '/premium/guardian-creator',
+  path: '/premium/guardian-creator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -166,6 +174,11 @@ const AdminOverviewRoute = AdminOverviewRouteImport.update({
 const AdminFunnelRoute = AdminFunnelRouteImport.update({
   id: '/funnel',
   path: '/funnel',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCtaRoute = AdminCtaRouteImport.update({
+  id: '/cta',
+  path: '/cta',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
@@ -197,6 +210,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
 const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDiaryRoute = AuthenticatedDiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedJourneyIndexRoute =
@@ -448,16 +466,19 @@ export interface FileRoutesByFullPath {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/diary': typeof AuthenticatedDiaryRoute
   '/help': typeof AuthenticatedHelpRoute
   '/home': typeof AuthenticatedHomeRoute
   '/journey': typeof AuthenticatedJourneyRouteWithChildren
   '/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/practices': typeof AuthenticatedPracticesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/cta': typeof AdminCtaRoute
   '/admin/funnel': typeof AdminFunnelRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/users': typeof AdminUsersRoute
+  '/premium/guardian-creator': typeof PremiumGuardianCreatorRoute
   '/premium/paywall': typeof PremiumPaywallRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
@@ -513,15 +534,18 @@ export interface FileRoutesByTo {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/diary': typeof AuthenticatedDiaryRoute
   '/help': typeof AuthenticatedHelpRoute
   '/home': typeof AuthenticatedHomeRoute
   '/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/practices': typeof AuthenticatedPracticesRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/cta': typeof AdminCtaRoute
   '/admin/funnel': typeof AdminFunnelRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/users': typeof AdminUsersRoute
+  '/premium/guardian-creator': typeof PremiumGuardianCreatorRoute
   '/premium/paywall': typeof PremiumPaywallRoute
   '/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
@@ -579,16 +603,19 @@ export interface FileRoutesById {
   '/rewards-intro': typeof RewardsIntroRoute
   '/to-spheres': typeof ToSpheresRoute
   '/welcome': typeof WelcomeRoute
+  '/_authenticated/diary': typeof AuthenticatedDiaryRoute
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/journey': typeof AuthenticatedJourneyRouteWithChildren
   '/_authenticated/opportunities': typeof AuthenticatedOpportunitiesRoute
   '/_authenticated/practices': typeof AuthenticatedPracticesRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/admin/cta': typeof AdminCtaRoute
   '/admin/funnel': typeof AdminFunnelRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/partners': typeof AdminPartnersRoute
   '/admin/users': typeof AdminUsersRoute
+  '/premium/guardian-creator': typeof PremiumGuardianCreatorRoute
   '/premium/paywall': typeof PremiumPaywallRoute
   '/_authenticated/journey/assess': typeof AuthenticatedJourneyAssessRoute
   '/_authenticated/journey/breathing-work': typeof AuthenticatedJourneyBreathingWorkRoute
@@ -646,16 +673,19 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/diary'
     | '/help'
     | '/home'
     | '/journey'
     | '/opportunities'
     | '/practices'
     | '/profile'
+    | '/admin/cta'
     | '/admin/funnel'
     | '/admin/overview'
     | '/admin/partners'
     | '/admin/users'
+    | '/premium/guardian-creator'
     | '/premium/paywall'
     | '/journey/assess'
     | '/journey/breathing-work'
@@ -711,15 +741,18 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/diary'
     | '/help'
     | '/home'
     | '/opportunities'
     | '/practices'
     | '/profile'
+    | '/admin/cta'
     | '/admin/funnel'
     | '/admin/overview'
     | '/admin/partners'
     | '/admin/users'
+    | '/premium/guardian-creator'
     | '/premium/paywall'
     | '/journey/assess'
     | '/journey/breathing-work'
@@ -776,16 +809,19 @@ export interface FileRouteTypes {
     | '/rewards-intro'
     | '/to-spheres'
     | '/welcome'
+    | '/_authenticated/diary'
     | '/_authenticated/help'
     | '/_authenticated/home'
     | '/_authenticated/journey'
     | '/_authenticated/opportunities'
     | '/_authenticated/practices'
     | '/_authenticated/profile'
+    | '/admin/cta'
     | '/admin/funnel'
     | '/admin/overview'
     | '/admin/partners'
     | '/admin/users'
+    | '/premium/guardian-creator'
     | '/premium/paywall'
     | '/_authenticated/journey/assess'
     | '/_authenticated/journey/breathing-work'
@@ -843,6 +879,7 @@ export interface RootRouteChildren {
   RewardsIntroRoute: typeof RewardsIntroRoute
   ToSpheresRoute: typeof ToSpheresRoute
   WelcomeRoute: typeof WelcomeRoute
+  PremiumGuardianCreatorRoute: typeof PremiumGuardianCreatorRoute
   PremiumPaywallRoute: typeof PremiumPaywallRoute
 }
 
@@ -953,6 +990,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PremiumPaywallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/premium/guardian-creator': {
+      id: '/premium/guardian-creator'
+      path: '/premium/guardian-creator'
+      fullPath: '/premium/guardian-creator'
+      preLoaderRoute: typeof PremiumGuardianCreatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -979,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/funnel'
       fullPath: '/admin/funnel'
       preLoaderRoute: typeof AdminFunnelRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cta': {
+      id: '/admin/cta'
+      path: '/cta'
+      fullPath: '/admin/cta'
+      preLoaderRoute: typeof AdminCtaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_authenticated/profile': {
@@ -1021,6 +1072,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof AuthenticatedHelpRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/diary': {
+      id: '/_authenticated/diary'
+      path: '/diary'
+      fullPath: '/diary'
+      preLoaderRoute: typeof AuthenticatedDiaryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/journey/': {
@@ -1390,6 +1448,7 @@ const AuthenticatedJourneyRouteWithChildren =
   AuthenticatedJourneyRoute._addFileChildren(AuthenticatedJourneyRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedDiaryRoute: typeof AuthenticatedDiaryRoute
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedJourneyRoute: typeof AuthenticatedJourneyRouteWithChildren
@@ -1402,6 +1461,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedDiaryRoute: AuthenticatedDiaryRoute,
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedJourneyRoute: AuthenticatedJourneyRouteWithChildren,
@@ -1420,6 +1480,7 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminCtaRoute: typeof AdminCtaRoute
   AdminFunnelRoute: typeof AdminFunnelRoute
   AdminOverviewRoute: typeof AdminOverviewRoute
   AdminPartnersRoute: typeof AdminPartnersRoute
@@ -1427,6 +1488,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminCtaRoute: AdminCtaRoute,
   AdminFunnelRoute: AdminFunnelRoute,
   AdminOverviewRoute: AdminOverviewRoute,
   AdminPartnersRoute: AdminPartnersRoute,
@@ -1450,6 +1512,7 @@ const rootRouteChildren: RootRouteChildren = {
   RewardsIntroRoute: RewardsIntroRoute,
   ToSpheresRoute: ToSpheresRoute,
   WelcomeRoute: WelcomeRoute,
+  PremiumGuardianCreatorRoute: PremiumGuardianCreatorRoute,
   PremiumPaywallRoute: PremiumPaywallRoute,
 }
 export const routeTree = rootRouteImport

@@ -18,11 +18,32 @@ function createSupabaseClient() {
     throw new Error(message);
   }
 
+  // Clear stale sessions from other Supabase projects (e.g. after project migration).
+  // If the stored JWT's project ref doesn't match the current project, autoRefreshToken
+  // would fire a request to the old (unreachable) host and show "Failed to fetch".
+  if (typeof window !== 'undefined') {
+    try {
+      const projectRef = new URL(SUPABASE_URL).hostname.split('.')[0];
+      const currentKey = `sb-${projectRef}-auth-token`;
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith('sb-') && k.endsWith('-auth-token') && k !== currentKey) {
+          localStorage.removeItem(k);
+        }
+      });
+    } catch {
+      // non-fatal
+    }
+  }
+
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
       storage: typeof window !== 'undefined' ? localStorage : undefined,
       persistSession: true,
-      autoRefreshToken: true,
+      // Disable auto-refresh on the client — the Supabase REST API may not be
+      // reachable from all browsers (DNS / network restrictions). Sessions are
+      // established via the /api/auth/anonymous Worker proxy, and all data
+      // calls go through useServerFn which runs on Cloudflare's network.
+      autoRefreshToken: false,
     }
   });
 }

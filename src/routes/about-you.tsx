@@ -43,38 +43,45 @@ function AboutYouScreen() {
   };
 
   return (
-    <main className="relative h-[100dvh] overflow-hidden bg-[#F9F4EE]">
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[#F9F4EE]">
       <AmbientBackground theme="safe" />
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9 }}
-        className="relative z-10 mx-auto flex h-full w-full max-w-md flex-col items-center justify-center overflow-y-auto px-6 py-5"
-      >
-        {/* Eva portrait with shimmer */}
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-5xl items-center px-6 py-8 md:px-12">
+        {/* Desktop 2-column: left = portrait, right = form */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9 }}
+          className="flex w-full flex-col items-center gap-6 md:grid md:grid-cols-2 md:items-center md:gap-16"
+        >
+        {/* LEFT — Eva + title */}
+        <div className="flex flex-col items-center text-center">
         <EvaPortrait />
 
-        <h1 className="mt-2 text-center font-display text-2xl text-glow">
+        <h1 className="mt-2 font-display text-2xl text-glow md:text-3xl">
           Я — Ева. Давай познакомимся
         </h1>
-        <p className="mt-1 text-center text-xs text-muted-foreground">
+        <p className="mt-1 text-xs text-muted-foreground md:mt-2 md:text-sm">
           Несколько мягких вопросов, чтобы я обращалась {formal ? "к вам" : "к тебе"} по-настоящему.
         </p>
+        </div>
+
+        {/* RIGHT — form */}
+        <div className="w-full">
 
         {/* Address form toggle */}
-        <div className="mt-3 flex items-center gap-2 rounded-full border border-border/60 bg-card/40 p-1">
+        <div className="mt-3 flex w-full items-center gap-1.5 rounded-full border border-border/60 bg-card/40 p-1">
           {(["ты", "вы"] as const).map((form) => (
             <button
               key={form}
               type="button"
               onClick={() => set({ address_form: form })}
-              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-all duration-200 ${
+              className={`flex-1 rounded-full py-2 text-sm font-bold tracking-wide transition-all duration-200 ${
                 address_form === form
                   ? "bg-primary/15 text-foreground shadow-sm border border-primary/40"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              На «{form}»
+              На «<span className="font-black">{form.toUpperCase()}</span>»
             </button>
           ))}
         </div>
@@ -143,12 +150,14 @@ function AboutYouScreen() {
           </div>
         </div>
 
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 flex justify-center md:justify-start">
           <GlowButton onClick={handleNext} disabled={!user_name.trim()} size="md">
             Продолжить
           </GlowButton>
         </div>
-      </motion.div>
+        </div>{/* end right */}
+        </motion.div>
+      </div>
     </main>
   );
 }

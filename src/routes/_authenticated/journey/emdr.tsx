@@ -7,6 +7,8 @@ import { GlowButton } from "@/components/eva/GlowButton";
 import { EmdrAnimation } from "@/components/eva/EmdrAnimation";
 import { useJourneyStore } from "@/lib/journey-store";
 import { updateJourney } from "@/lib/journey.functions";
+import { useAddress } from "@/lib/use-address";
+import { useAmbientTrack } from "@/lib/use-ambient-track";
 
 export const Route = createFileRoute("/_authenticated/journey/emdr")({
   component: EmdrScreen,
@@ -25,9 +27,10 @@ const SHAPE_LABELS: Record<string, string> = {
 
 
 
-
 function EmdrScreen() {
-  const { state, journeyId, setStep, patch } = useJourneyStore();
+  useAmbientTrack("bowls");
+  const a = useAddress();
+  const { state, journeyId, pushStep, patch } = useJourneyStore();
   const navigate = useNavigate();
   const save = useServerFn(updateJourney);
 
@@ -52,7 +55,7 @@ function EmdrScreen() {
       coins: (state.coins || 0) + 5,
     };
     patch({ emdr_cycles: 3, xp: next.xp, coins: next.coins });
-    setStep("reassess");
+    pushStep("reassess");
     try {
       await save({
         data: { id: journeyId, state: next as never, current_step: "reassess" },
@@ -73,7 +76,7 @@ function EmdrScreen() {
       coins: (state.coins || 1) + 1,
     };
     patch({ emdr_cycles: 0, xp: next.xp, coins: next.coins });
-    setStep("reassess");
+    pushStep("reassess");
     try {
       await save({
         data: { id: journeyId, state: next as never, current_step: "reassess" },
@@ -86,52 +89,62 @@ function EmdrScreen() {
 
   return (
     <FadeTransition k="emdr">
-      <div className="step-10-screen">
-        <div className="step-10-content">
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Практика
+      <div className="relative flex h-full min-h-0 w-full flex-col px-6 py-6 md:px-10 md:py-8">
+
+        {/* Eva — decorative presence on desktop */}
+        <div className="pointer-events-none absolute bottom-0 right-0 hidden w-36 opacity-20 md:block lg:w-48">
+          <img src="/assets/eva/eva-butterfly-pose.svg" alt="" className="h-auto w-full" />
+        </div>
+
+        {/* TOP — title + description */}
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            Практика
+          </p>
+          <h1 className="mt-3 font-display text-3xl text-glow md:text-5xl">
+            Сейчас мы мягко растворим это
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            {a.uderzhivaj} образ, который {a.pochuvstvovala}. {a.sledi} глазами за светом:{" "}
+            {a.nedvigaj} головой. {a.daj} телу самостоятельно справиться с этим дискомфортом.
+          </p>
+        </div>
+
+        {/* MIDDLE — full-width animation */}
+        <div className="mt-8 flex flex-1 items-center">
+          <GlassCard className="w-full p-6 md:p-10">
+            <EmdrAnimation cycles={3} onComplete={handleComplete} />
+          </GlassCard>
+        </div>
+
+        {/* DONE state */}
+        {done && (
+          <div className="mt-6 text-center">
+            <p className="font-display text-base italic text-foreground/80">
+              {a.sdelajte} глубокий вдох. {a.zameti}, что изменилось внутри.
             </p>
-            <h1 className="step-10-title mt-4 font-display text-4xl text-glow md:text-5xl">
-              Сейчас мы мягко растворим это
-            </h1>
-            <p className="step-10-description mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-              Удерживай образ, который ты почувствовала. Следи глазами за светом:
-              не двигай головой. Дай телу самостоятельно справиться с этим дискомфортом.
-            </p>
-          </div>
-
-
-          <div className="emdr-practice-card mt-6 w-full max-w-2xl">
-            <GlassCard className="p-4 md:p-8">
-              <EmdrAnimation cycles={3} onComplete={handleComplete} />
-            </GlassCard>
-          </div>
-
-          {done && (
-            <div className="mt-8 w-full max-w-2xl text-center">
-              <p className="font-display text-base italic text-foreground/80">
-                Сделай глубокий вдох. Заметь, что изменилось внутри.
+            <div className="mt-4 flex flex-col items-center gap-2">
+              <GlowButton onClick={handleNext} disabled={saving}>
+                {saving ? "сохраняю…" : "Я готова проверить"}
+              </GlowButton>
+              <p className="text-xs text-muted-foreground">
+                +15 XP · +5 монет за прохождение цикла
               </p>
-              <div className="mt-6 flex flex-col items-center gap-2">
-                <GlowButton onClick={handleNext} disabled={saving}>
-                  {saving ? "сохраняю…" : "Я готова проверить"}
-                </GlowButton>
-                <p className="text-xs text-muted-foreground">
-                  +15 XP · +5 монет за прохождение цикла
-                </p>
-              </div>
             </div>
-          )}
+          </div>
+        )}
 
+        {/* BOTTOM — skip */}
+        <div className="mt-4 pb-2 text-center">
           <button
             onClick={handleSkip}
             disabled={saving}
-            className="mt-6 mb-2 text-xs tracking-wide text-muted-foreground/60 underline-offset-2 transition-colors hover:text-muted-foreground hover:underline disabled:opacity-40"
+            className="text-xs tracking-wide text-muted-foreground/60 underline-offset-2 transition-colors hover:text-muted-foreground hover:underline disabled:opacity-40"
           >
             Пропустить
           </button>
         </div>
+
       </div>
     </FadeTransition>
   );
